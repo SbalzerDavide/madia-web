@@ -7,8 +7,7 @@
 <meta name="description" content="Madia genera la pianificazione dei pasti, ne ricava la lista della spesa e mette davanti le ricette che svuotano la dispensa. Meno decisioni ogni sera, meno sprechi, meno spesa.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
-<meta name="theme-color" content="#F2EDE3" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#1E1813" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F2EDE3">
 
 <!-- URL pubblica del sito. Puntando stockup-app.com a Pages, sostituisci le tre
      assolute qui sotto (canonical, og:url, og:image + twitter:image) -->
@@ -30,7 +29,11 @@
 
 <style>
 
-  /* ================= Tokens ================= */
+  /* ================= Tokens =================
+     Il tema chiaro è sempre quello di default: lo scuro si attiva solo dal
+     pulsante nell'header, che scrive data-ui="dark" sull'elemento radice e
+     ricorda la scelta in localStorage. Nessun ascolto delle preferenze di
+     sistema, per volontà di progetto. */
   :root {
     color-scheme: light;
     --bg: #F2EDE3;
@@ -53,30 +56,7 @@
     --shadow-card: 0 2px 10px rgba(38, 32, 26, 0.05);
     --radius: 14px;
   }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      color-scheme: dark;
-      --bg: #1E1813;
-      --bg-deep: #17120E;
-      --surface: #292219;
-      --surface-2: #322A20;
-      --ink: #F2EADD;
-      --ink-2: #C4B8A6;
-      --muted: #97897A;
-      --line: rgba(242, 234, 221, 0.10);
-      --accent: #E0693F;
-      --accent-soft: rgba(224, 105, 63, 0.14);
-      --accent-ink: #FFF4EC;
-      --green: #8FB56A;
-      --green-soft: rgba(143, 181, 106, 0.16);
-      --amber: #DFA84E;
-      --amber-soft: rgba(223, 168, 78, 0.16);
-      --danger: #E0694F;
-      --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.35);
-      --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.30);
-    }
-  }
-  :root[data-theme="dark"] {
+  :root[data-ui="dark"] {
     color-scheme: dark;
     --bg: #1E1813;
     --bg-deep: #17120E;
@@ -96,26 +76,6 @@
     --danger: #E0694F;
     --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.35);
     --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.30);
-  }
-  :root[data-theme="light"] {
-    --bg: #F2EDE3;
-    --bg-deep: #EAE3D5;
-    --surface: #FFFDF8;
-    --surface-2: #F0E9DC;
-    --ink: #26201A;
-    --ink-2: #5C5348;
-    --muted: #8A7F70;
-    --line: rgba(38, 32, 26, 0.10);
-    --accent: #C84B27;
-    --accent-soft: rgba(200, 75, 39, 0.10);
-    --accent-ink: #FFF8F2;
-    --green: #5F7F44;
-    --green-soft: rgba(95, 127, 68, 0.14);
-    --amber: #D29032;
-    --amber-soft: rgba(210, 144, 50, 0.16);
-    --danger: #B8402C;
-    --shadow-soft: 0 10px 30px rgba(38, 32, 26, 0.08);
-    --shadow-card: 0 2px 10px rgba(38, 32, 26, 0.05);
   }
 
   * { box-sizing: border-box; }
@@ -171,9 +131,20 @@
   .nav-links a:hover, .nav-links a:focus-visible { color: var(--accent); }
   .nav-cta {
     background: var(--accent); color: var(--accent-ink) !important;
-    padding: 8px 16px; border-radius: 999px; font-weight: 700 !important;
+    padding: 8px 16px; border-radius: 999px; font-weight: 700;
+    font-size: 0.93rem; text-decoration: none; flex: none;
   }
-  @media (max-width: 860px) { .nav-links a:not(.nav-cta) { display: none; } }
+  .theme-toggle {
+    flex: none; width: 34px; height: 34px; border-radius: 999px; padding: 0;
+    background: var(--surface); border: 1px solid var(--line); color: var(--ink-2);
+    display: grid; place-items: center; cursor: pointer;
+  }
+  .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  .theme-toggle svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
+  .theme-toggle .i-moon { display: none; }
+  :root[data-ui="dark"] .theme-toggle .i-sun { display: none; }
+  :root[data-ui="dark"] .theme-toggle .i-moon { display: block; }
+  @media (max-width: 860px) { .nav-links { display: none; } }
 
   a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
 
@@ -340,6 +311,17 @@
 </head>
 <body>
 
+<script>
+  /* Applica subito la scelta ricordata, così il tema scuro non arriva a pagina già dipinta. */
+  (function () {
+    try {
+      if (localStorage.getItem("madia-theme") === "dark") {
+        document.documentElement.setAttribute("data-ui", "dark");
+      }
+    } catch (e) {}
+  })();
+</script>
+
 <header class="site">
   <div class="wrap nav">
     <a class="brand" href="#top" aria-label="Madia — torna su">
@@ -358,8 +340,12 @@
       <a href="#equilibrio">Equilibrio</a>
       <a href="#quotidiano">Ogni giorno</a>
       <a href="#ai">L'AI in cucina</a>
-      <a class="nav-cta" href="#scarica">Presto su App Store</a>
     </nav>
+    <button class="theme-toggle" type="button" aria-pressed="false" aria-label="Attiva il tema scuro">
+      <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.7v2.1M12 19.2v2.1M2.7 12h2.1M19.2 12h2.1M5.5 5.5l1.5 1.5M17 17l1.5 1.5M18.5 5.5L17 7M7 17l-1.5 1.5"/></svg>
+      <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 14.3A8.3 8.3 0 0 1 9.7 4a8.4 8.4 0 1 0 10.3 10.3z"/></svg>
+    </button>
+    <a class="nav-cta" href="#scarica">Presto su App Store</a>
   </div>
 </header>
 
@@ -737,6 +723,26 @@
       });
     }, { threshold: 0.12 });
     els.forEach(function (el) { io.observe(el); });
+  })();
+</script>
+
+<script>
+  (function () {
+    var root = document.documentElement;
+    var btn = document.querySelector(".theme-toggle");
+    if (!btn) return;
+    function apply(dark) {
+      if (dark) root.setAttribute("data-ui", "dark");
+      else root.removeAttribute("data-ui");
+      btn.setAttribute("aria-pressed", dark ? "true" : "false");
+      btn.setAttribute("aria-label", dark ? "Torna al tema chiaro" : "Attiva il tema scuro");
+    }
+    apply(root.getAttribute("data-ui") === "dark");
+    btn.addEventListener("click", function () {
+      var dark = root.getAttribute("data-ui") !== "dark";
+      apply(dark);
+      try { localStorage.setItem("madia-theme", dark ? "dark" : "light"); } catch (e) {}
+    });
   })();
 </script>
 
