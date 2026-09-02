@@ -146,6 +146,22 @@
   :root[data-ui="dark"] .theme-toggle .i-moon { display: block; }
   @media (max-width: 860px) { .nav-links { display: none; } }
 
+  .version-bar { border-bottom: 1px solid var(--line); }
+  .version-bar .wrap { display: flex; justify-content: flex-end; }
+  .version-switch {
+    display: inline-flex; overflow: hidden;
+    border: 1px solid var(--line); border-width: 0 1px;
+    color: var(--ink-2); font-size: 0.76rem; font-weight: 700;
+  }
+  .version-switch__item {
+    display: inline-flex; min-height: 44px; align-items: center;
+    padding: 0 14px; color: inherit; text-decoration: none;
+  }
+  .version-switch__item[aria-current="page"] {
+    background: var(--ink); color: var(--bg);
+  }
+  .version-switch a:hover { color: var(--accent); }
+
   a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
 
   /* ================= Hero ================= */
@@ -298,6 +314,9 @@
 
   footer.site { border-top: 1px solid var(--line); padding: 34px 0 44px; color: var(--muted); font-size: 0.88rem; }
   .foot { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .foot-links { margin-left: auto; display: flex; gap: 18px; }
+  .foot a { color: var(--ink-2); text-decoration: none; font-weight: 600; }
+  .foot a:hover { color: var(--accent); }
   .foot .brand { font-size: 1rem; }
 
   /* motion: visible at rest, slides into place */
@@ -323,6 +342,14 @@
 </script>
 
 <header class="site">
+  <div class="version-bar">
+    <div class="wrap">
+      <nav class="version-switch" aria-label="Scegli la versione della landing">
+        <span class="version-switch__item" aria-current="page">Classica</span>
+        <a class="version-switch__item" href="editoriale/">Editoriale</a>
+      </nav>
+    </div>
+  </div>
   <div class="wrap nav">
     <a class="brand" href="#top" aria-label="Madia — torna su">
       <span class="brand-mark" aria-hidden="true">
@@ -706,6 +733,11 @@
       Madia
     </span>
     <span>Pianifica, genera la lista, svuota la dispensa.</span>
+    <span class="foot-links">
+      <a href="privacy/">Privacy</a>
+      <a href="supporto/">Supporto</a>
+      <a href="termini/">Termini</a>
+    </span>
   </div>
 </footer>
 
