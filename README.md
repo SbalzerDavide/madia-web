@@ -31,6 +31,8 @@ La versione editoriale parte in italiano e include anche l'inglese. Il controllo
 `IT / EN` salva la preferenza in `localStorage`; senza JavaScript la pagina resta
 completa e leggibile in italiano. HTML, CSS, dizionari e comportamento sono
 contenuti nello stesso file, mentre font e screenshot restano risorse locali.
+Entrambe le landing collegano dal footer le pagine Privacy, Supporto e Termini;
+nella versione editoriale le etichette seguono la lingua selezionata.
 
 ## Pubblicare su GitHub Pages
 

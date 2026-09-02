@@ -1245,6 +1245,28 @@ svg {
   color: var(--color-text-soft);
 }
 
+.site-footer__meta {
+  display: grid;
+  gap: var(--space-3);
+  align-content: end;
+}
+
+.site-footer__legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-6);
+}
+
+.site-footer__legal a {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  color: var(--color-text);
+  font-size: var(--text-small);
+  font-weight: 750;
+  text-decoration: none;
+}
+
 .site-footer__top {
   display: inline-flex;
   min-height: 2.75rem;
@@ -1770,6 +1792,7 @@ svg {
 
 @media (hover: hover) and (pointer: fine) {
   .locale-switch__option:hover,
+  .site-footer__legal a:hover,
   .site-footer__top:hover {
     color: var(--color-terracotta-dark);
   }
@@ -2048,11 +2071,12 @@ svg {
             <p class="flow-step__number" data-i18n="flow.step2Label">
               02 / Lista della spesa
             </p>
-            <h3 data-i18n="flow.step2Title">La lista nasce dal piano.</h3>
+            <h3 data-i18n="flow.step2Title">La lista nasce dalla pianificazione.</h3>
             <p data-i18n="flow.step2Body">
-              Entrano solo gli ingredienti che davvero non hai, già
-              deduplicati e ordinati per reparto. Ogni riga conserva il legame
-              con la ricetta da cui arriva.
+              Partendo dalla pianificazione dei pasti, Madia controlla cosa hai
+              già in dispensa e aggiunge alla lista solo gli ingredienti
+              mancanti, ordinati per reparto. Ogni voce resta collegata alla
+              ricetta per cui serve.
             </p>
             <ul class="flow-step__details">
               <li data-i18n="flow.step2Detail1">
@@ -2536,9 +2560,20 @@ svg {
         data-i18n-aria-label="nav.home"
         aria-label="Torna all'inizio"
       >madia<span>.</span></a>
-      <p data-i18n="footer.line">
-        Pianifica, genera la lista, svuota la dispensa.
-      </p>
+      <div class="site-footer__meta">
+        <p data-i18n="footer.line">
+          Pianifica, genera la lista, svuota la dispensa.
+        </p>
+        <nav
+          class="site-footer__legal"
+          aria-label="Pagine informative"
+          data-i18n-aria-label="footer.legalAria"
+        >
+          <a href="../privacy/" data-i18n="footer.privacy">Privacy</a>
+          <a href="../supporto/" data-i18n="footer.support">Supporto</a>
+          <a href="../termini/" data-i18n="footer.terms">Termini</a>
+        </nav>
+      </div>
       <a class="site-footer__top" href="#top">
         <span data-i18n="footer.top">Torna su</span>
         <span aria-hidden="true">↑</span>
@@ -2610,9 +2645,9 @@ const translations = {
     "flow.step1Outcome":
       "Risultato: una settimana modificabile, pasto per pasto.",
     "flow.step2Label": "02 / Lista della spesa",
-    "flow.step2Title": "La lista nasce dal piano.",
+    "flow.step2Title": "La lista nasce dalla pianificazione.",
     "flow.step2Body":
-      "Entrano solo gli ingredienti che davvero non hai, già deduplicati e ordinati per reparto. Ogni riga conserva il legame con la ricetta da cui arriva.",
+      "Partendo dalla pianificazione dei pasti, Madia controlla cosa hai già in dispensa e aggiunge alla lista solo gli ingredienti mancanti, ordinati per reparto. Ogni voce resta collegata alla ricetta per cui serve.",
     "flow.step2Detail1":
       "Se cambi un pasto, Madia mostra prima cosa aggiungere e togliere.",
     "flow.step2Detail2":
@@ -2799,6 +2834,10 @@ const translations = {
     "launch.italian": "In italiano",
     "launch.local": "Pensata per la spesa in Italia",
     "footer.line": "Pianifica, genera la lista, svuota la dispensa.",
+    "footer.legalAria": "Pagine informative",
+    "footer.privacy": "Privacy",
+    "footer.support": "Supporto",
+    "footer.terms": "Termini",
     "footer.top": "Torna su",
   },
   en: {
@@ -2863,9 +2902,9 @@ const translations = {
     "flow.step1Outcome":
       "Outcome: an editable week, one meal at a time.",
     "flow.step2Label": "02 / Grocery list",
-    "flow.step2Title": "The list starts from the plan.",
+    "flow.step2Title": "The list starts from your meal plan.",
     "flow.step2Body":
-      "Only ingredients you truly need enter the list, already deduplicated and sorted by store section. Every row stays linked to its source recipe.",
+      "Starting from your meal plan, Madia checks what is already in your pantry and adds only the missing ingredients to the list, sorted by store section. Every item stays linked to the recipe it is needed for.",
     "flow.step2Detail1":
       "Change a meal and Madia previews what will be added or removed.",
     "flow.step2Detail2":
@@ -3052,6 +3091,10 @@ const translations = {
     "launch.italian": "Available in Italian",
     "launch.local": "Designed for grocery shopping in Italy",
     "footer.line": "Plan, generate the list, use what is in your pantry.",
+    "footer.legalAria": "Information pages",
+    "footer.privacy": "Privacy",
+    "footer.support": "Support",
+    "footer.terms": "Terms",
     "footer.top": "Back to top",
   },
 };

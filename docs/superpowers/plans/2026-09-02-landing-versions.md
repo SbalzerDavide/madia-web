@@ -47,11 +47,33 @@ File: `README.md`
 - Descrivere il selettore, la gestione IT/EN e la struttura dei file.
 - Conservare integralmente la documentazione legale già aggiunta.
 
-## 5. Verificare
+## 5. Collegare le pagine informative dalla versione editoriale
+
+File: `editoriale/index.html`
+
+- Raggruppare testo e navigazione informativa nella colonna centrale del footer.
+- Aggiungere i collegamenti relativi a `../privacy/`, `../supporto/` e
+  `../termini/`.
+- Localizzare etichetta accessibile e testi visibili in italiano e inglese.
+- Mantenere una disposizione leggibile e adattabile ai viewport stretti.
+
+## 6. Chiarire la generazione della lista
+
+File: `index.html`, `editoriale/index.html`
+
+- Usare il titolo `La lista nasce dalla pianificazione` in entrambe le landing.
+- Spiegare che Madia confronta gli ingredienti richiesti dalla pianificazione
+  con ciò che è già presente in dispensa.
+- Eliminare `deduplicati` e il refuso `dedupplicati`.
+- Aggiornare la traduzione inglese della versione editoriale.
+
+## 7. Verificare
 
 - Validare entrambi i documenti HTML.
 - Controllare ancore e collegamenti tra versioni.
 - Controllare corrispondenza delle chiavi IT/EN.
+- Controllare i tre collegamenti informativi e le etichette IT/EN del footer.
+- Controllare il nuovo testo sulla lista in entrambe le landing.
 - Verificare percorsi locali, assenza di risorse esterne e compatibilità Pages.
 - Avviare un server statico locale e controllare le risposte di `/` e
   `/editoriale/`.

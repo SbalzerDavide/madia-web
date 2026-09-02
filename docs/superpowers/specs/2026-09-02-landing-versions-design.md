@@ -49,6 +49,15 @@ La pagina riusa gli screenshot già disponibili in `img/`:
 Le icone necessarie sono SVG inline. Eventuali font aggiuntivi sono file locali,
 senza richieste a CDN o cataloghi esterni.
 
+Il footer include gli stessi collegamenti informativi della versione classica:
+
+- `Privacy` verso `../privacy/`;
+- `Supporto` verso `../supporto/`;
+- `Termini` verso `../termini/`.
+
+I link formano una navigazione semantica separata. Restano affiancati quando lo
+spazio lo consente e passano su una nuova riga nei viewport stretti.
+
 ## Lingue
 
 La versione editoriale mantiene italiano e inglese:
@@ -66,6 +75,29 @@ in inglese i testi alternativi lo indicano quando utile.
 
 La versione classica resta in italiano e conserva il selettore del tema già
 presente.
+
+Nella versione editoriale le etichette del footer diventano `Privacy`,
+`Support` e `Terms` quando è selezionato l'inglese. Le destinazioni restano le
+stesse perché le pagine informative sono uniche per entrambe le landing.
+
+## Testo della lista della spesa
+
+Entrambe le landing usano la stessa formulazione per il secondo passaggio del
+flusso:
+
+- titolo: `La lista nasce dalla pianificazione.`;
+- descrizione: `Partendo dalla pianificazione dei pasti, Madia controlla cosa
+  hai già in dispensa e aggiunge alla lista solo gli ingredienti mancanti,
+  ordinati per reparto. Ogni voce resta collegata alla ricetta per cui serve.`
+
+La versione editoriale traduce il passaggio in inglese con:
+
+- titolo: `The list starts from your meal plan.`;
+- descrizione: `Starting from your meal plan, Madia checks what is already in
+  your pantry and adds only the missing ingredients to the list, sorted by
+  store section. Every item stays linked to the recipe it is needed for.`
+
+Il termine tecnico `deduplicati` non viene usato.
 
 ## Responsive e accessibilità
 
@@ -111,7 +143,9 @@ Prima della consegna verranno controllati:
 6. rendering responsive su viewport desktop e mobile;
 7. navigazione da tastiera, nomi accessibili e riduzione del movimento;
 8. assenza di risorse runtime esterne e compatibilità con GitHub Pages;
-9. validità HTML e assenza di errori evidenti in console.
+9. raggiungibilità di privacy, supporto e termini dal footer editoriale;
+10. presenza della nuova formulazione sulla lista in entrambe le landing;
+11. validità HTML e assenza di errori evidenti in console.
 
 ## Documentazione
 
