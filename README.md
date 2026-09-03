@@ -4,8 +4,9 @@ Sito statico senza build e senza dipendenze runtime. Comprende due versioni dell
 landing, sei screenshot dell'app, le icone e le pagine informative.
 
 ```
-index.html                 landing classica, pubblicata su /
-editoriale/index.html      landing editoriale bilingue, pubblicata su /editoriale/
+index.html                 landing editoriale bilingue, pubblicata su /
+classica/index.html        landing classica, accessibile direttamente su /classica/
+editoriale/index.html      redirect compatibile dalla vecchia route /editoriale/
 favicon.svg                marchio Madia
 img/apple-touch-icon.png   icona 180×180 per iOS
 img/og-cover.jpg           immagine 1200×630 per le condivisioni
@@ -21,11 +22,11 @@ assets/gabarito-*.woff2    font locale della landing editoriale
 
 ## Versioni della landing
 
-La homepage conserva la versione classica. La seconda versione mantiene la
-grafica editoriale sviluppata per Madia e si trova in `editoriale/index.html`.
-Il selettore `Classica · Editoriale` nell'header di entrambe permette di passare
-da una versione all'altra con percorsi relativi, validi sia su GitHub Pages sia
-aprendo il sito in locale.
+La homepage usa la versione editoriale. La versione classica è conservata in
+`classica/index.html`, ma non è collegata dalla landing: resta consultabile solo
+conoscendo il suo URL diretto. La vecchia route `/editoriale/` reindirizza alla
+homepage per mantenere validi eventuali link già condivisi. Le due landing non
+mostrano selettori o pulsanti per passare da una versione all'altra.
 
 La versione editoriale parte in italiano e include anche l'inglese. Il controllo
 `IT / EN` salva la preferenza in `localStorage`; senza JavaScript la pagina resta
@@ -67,10 +68,12 @@ oppure un `CNAME` verso `sbalzerdavide.github.io` per il sottodominio `www`. Poi
 
 ## Da aggiornare quando cambia l'indirizzo
 
-Nei `<head>` di `index.html` e `editoriale/index.html` gli URL assoluti di
+Nei `<head>` di `index.html` e `classica/index.html` gli URL assoluti di
 `canonical`, `og:url`, `og:image` e `twitter:image` puntano attualmente a
-`https://sbalzerdavide.github.io/madia-web/`. Se cambia il dominio pubblico,
-vanno aggiornate entrambe le pagine; il resto del sito usa percorsi relativi.
+`https://sbalzerdavide.github.io/madia-web/`. Anche il redirect in
+`editoriale/index.html` dichiara la canonical della homepage. Se cambia il
+dominio pubblico, vanno aggiornate tutte e tre le pagine; il resto del sito usa
+percorsi relativi.
 
 ## Rifare gli screenshot
 

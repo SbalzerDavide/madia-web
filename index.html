@@ -1,782 +1,3196 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="it">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Madia — Spesa e Dispensa</title>
-<meta name="description" content="Madia genera la pianificazione dei pasti, ne ricava la lista della spesa e mette davanti le ricette che svuotano la dispensa. Meno decisioni ogni sera, meno sprechi, meno spesa.">
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
-<meta name="theme-color" content="#F2EDE3">
+  <head>
+    <meta charset="UTF-8">
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    >
+    <meta
+      name="description"
+      content="Madia genera la pianificazione dei pasti, ne ricava la lista della spesa e aiuta a svuotare la dispensa."
+    >
+    <meta name="theme-color" content="#f3ede2">
+    <title>Madia | La settimana in cucina, quasi in automatico</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+    <link rel="canonical" href="https://sbalzerdavide.github.io/madia-web/">
+    <meta property="og:url" content="https://sbalzerdavide.github.io/madia-web/">
+    <meta property="og:image" content="https://sbalzerdavide.github.io/madia-web/img/og-cover.jpg">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Madia">
+    <meta property="og:locale" content="it_IT">
+    <meta property="og:title" content="Madia | La settimana in cucina, quasi in automatico">
+    <meta property="og:description" content="Madia genera la pianificazione dei pasti, ne ricava la lista della spesa e aiuta a svuotare la dispensa.">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="La pianificazione settimanale di Madia con i pasti già proposti.">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://sbalzerdavide.github.io/madia-web/img/og-cover.jpg">
+    <style>
 
-<!-- URL pubblica del sito. Puntando stockup-app.com a Pages, sostituisci le tre
-     assolute qui sotto (canonical, og:url, og:image + twitter:image) -->
-<link rel="canonical" href="https://sbalzerdavide.github.io/madia-web/">
-<meta property="og:url" content="https://sbalzerdavide.github.io/madia-web/">
-<meta property="og:image" content="https://sbalzerdavide.github.io/madia-web/img/og-cover.jpg">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="Madia">
-<meta property="og:locale" content="it_IT">
-<meta property="og:title" content="Madia — Spesa e Dispensa">
-<meta property="og:description" content="Madia genera la pianificazione dei pasti, ne ricava la lista della spesa e mette davanti le ricette che svuotano la dispensa. Meno decisioni ogni sera, meno sprechi, meno spesa.">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="La pianificazione settimanale di Madia con i pasti già proposti.">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Madia — Spesa e Dispensa">
-<meta name="twitter:description" content="Madia genera la pianificazione dei pasti, ne ricava la lista della spesa e mette davanti le ricette che svuotano la dispensa. Meno decisioni ogni sera, meno sprechi, meno spesa.">
-<meta name="twitter:image" content="https://sbalzerdavide.github.io/madia-web/img/og-cover.jpg">
+@font-face {
+  font-family: "Gabarito Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 900;
+  src: url("assets/gabarito-latin-ext-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
 
-<style>
+@font-face {
+  font-family: "Gabarito Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 900;
+  src: url("assets/gabarito-latin-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
 
-  /* ================= Tokens =================
-     Il tema chiaro è sempre quello di default: lo scuro si attiva solo dal
-     pulsante nell'header, che scrive data-ui="dark" sull'elemento radice e
-     ricorda la scelta in localStorage. Nessun ascolto delle preferenze di
-     sistema, per volontà di progetto. */
-  :root {
-    color-scheme: light;
-    --bg: #F2EDE3;
-    --bg-deep: #EAE3D5;
-    --surface: #FFFDF8;
-    --surface-2: #F0E9DC;
-    --ink: #26201A;
-    --ink-2: #5C5348;
-    --muted: #8A7F70;
-    --line: rgba(38, 32, 26, 0.10);
-    --accent: #C84B27;
-    --accent-soft: rgba(200, 75, 39, 0.10);
-    --accent-ink: #FFF8F2;
-    --green: #5F7F44;
-    --green-soft: rgba(95, 127, 68, 0.14);
-    --amber: #D29032;
-    --amber-soft: rgba(210, 144, 50, 0.16);
-    --danger: #B8402C;
-    --shadow-soft: 0 10px 30px rgba(38, 32, 26, 0.08);
-    --shadow-card: 0 2px 10px rgba(38, 32, 26, 0.05);
-    --radius: 14px;
-  }
-  :root[data-ui="dark"] {
-    color-scheme: dark;
-    --bg: #1E1813;
-    --bg-deep: #17120E;
-    --surface: #292219;
-    --surface-2: #322A20;
-    --ink: #F2EADD;
-    --ink-2: #C4B8A6;
-    --muted: #97897A;
-    --line: rgba(242, 234, 221, 0.10);
-    --accent: #E0693F;
-    --accent-soft: rgba(224, 105, 63, 0.14);
-    --accent-ink: #FFF4EC;
-    --green: #8FB56A;
-    --green-soft: rgba(143, 181, 106, 0.16);
-    --amber: #DFA84E;
-    --amber-soft: rgba(223, 168, 78, 0.16);
-    --danger: #E0694F;
-    --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.35);
-    --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.30);
+:root {
+  color-scheme: light;
+
+  --color-cream-0: oklch(98% 0.012 72);
+  --color-cream-1: oklch(95.5% 0.019 72);
+  --color-cream-2: oklch(90.5% 0.026 72);
+  --color-cream-3: oklch(83% 0.032 67);
+  --color-brown-1: oklch(48% 0.035 58);
+  --color-brown-2: oklch(37% 0.035 52);
+  --color-brown-3: oklch(25% 0.03 47);
+  --color-espresso: oklch(19% 0.025 43);
+  --color-terracotta-soft: oklch(83% 0.075 44);
+  --color-terracotta: oklch(55% 0.16 39);
+  --color-terracotta-dark: oklch(44% 0.135 37);
+  --color-olive-soft: oklch(87% 0.055 123);
+  --color-olive: oklch(52% 0.082 124);
+  --color-honey: oklch(82% 0.13 82);
+
+  --color-page: var(--color-cream-1);
+  --color-surface: var(--color-cream-0);
+  --color-text: var(--color-espresso);
+  --color-text-soft: var(--color-brown-1);
+  --color-line: var(--color-cream-3);
+  --color-accent: var(--color-terracotta);
+  --color-accent-ink: var(--color-cream-0);
+
+  --font-brand: "Gabarito Variable", "Arial Rounded MT Bold", system-ui,
+    sans-serif;
+
+  --text-caption: 0.75rem;
+  --text-small: 0.875rem;
+  --text-body: 1rem;
+  --text-lead: clamp(1.125rem, 1rem + 0.35vw, 1.35rem);
+  --text-section: clamp(2.5rem, 1.7rem + 3vw, 5.5rem);
+  --text-display: clamp(3.25rem, 2.1rem + 6.5vw, 8.75rem);
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-24: 6rem;
+  --space-32: 8rem;
+
+  --page-gutter: clamp(1.25rem, 4vw, 5.5rem);
+  --page-max: 96rem;
+  --copy-measure: 67ch;
+
+  --radius-small: 0.75rem;
+  --radius-medium: 1.4rem;
+  --radius-large: 2.5rem;
+  --radius-phone: 2.65rem;
+
+  --shadow-phone: 0 2rem 5rem oklch(19% 0.025 43 / 0.22);
+  --shadow-lifted: 0 1.2rem 3rem oklch(24% 0.03 47 / 0.12);
+
+  --duration-fast: 140ms;
+  --duration-state: 260ms;
+  --duration-enter: 650ms;
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--color-page);
+  color: var(--color-text);
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(7rem + env(safe-area-inset-top));
+}
+
+body {
+  margin: 0;
+  min-width: 20rem;
+  min-height: 100vh;
+  overflow-x: clip;
+  background: var(--color-page);
+  font-family: var(--font-brand);
+  font-size: var(--text-body);
+  font-kerning: normal;
+  font-optical-sizing: auto;
+  line-height: 1.5;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+a {
+  color: inherit;
+  font: inherit;
+}
+
+button {
+  border: 0;
+}
+
+a {
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.2em;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 0.2rem solid var(--color-terracotta-dark);
+  outline-offset: 0.25rem;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+svg {
+  display: block;
+  width: 1em;
+  height: 1em;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 100;
+  top: var(--space-3);
+  left: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  transform: translateY(-180%);
+  border-radius: var(--radius-small);
+  background: var(--color-espresso);
+  color: var(--color-cream-0);
+  font-weight: 700;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.eyebrow {
+  color: var(--color-terracotta-dark);
+  font-size: var(--text-caption);
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.eyebrow--light {
+  color: var(--color-terracotta-soft);
+}
+
+.eyebrow--on-color {
+  color: var(--color-espresso);
+}
+
+.reveal-ready .reveal {
+  opacity: 0;
+  transform: translateY(2rem);
+  transition:
+    opacity var(--duration-enter) var(--ease-out-expo),
+    transform var(--duration-enter) var(--ease-out-expo);
+}
+
+.reveal-ready .reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 
-  * { box-sizing: border-box; }
-  img { max-width: 100%; }
-  html { -webkit-text-size-adjust: 100%; }
-  html { scroll-behavior: smooth; }
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--ink);
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Roboto, "Segoe UI", "Helvetica Neue", sans-serif;
-    line-height: 1.55;
-    -webkit-font-smoothing: antialiased;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-areas:
+    "brand locale"
+    "nav nav";
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 7rem;
+  padding: max(var(--space-3), env(safe-area-inset-top)) var(--page-gutter)
+    var(--space-3);
+  border-bottom: 1px solid var(--color-line);
+  background: var(--color-page);
+}
+
+.wordmark {
+  justify-self: start;
+  color: var(--color-text);
+  font-size: 1.6rem;
+  font-weight: 900;
+  letter-spacing: -0.06em;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.site-header .wordmark {
+  grid-area: brand;
+}
+
+.wordmark span {
+  color: var(--color-accent);
+}
+
+.site-nav {
+  grid-area: nav;
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 3vw, 2rem);
+  overflow-x: auto;
+  padding-bottom: var(--space-1);
+  scrollbar-width: none;
+  white-space: nowrap;
+}
+
+.site-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.site-nav a {
+  display: inline-flex;
+  flex: 0 0 auto;
+  min-height: 2.75rem;
+  align-items: center;
+  font-size: var(--text-small);
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.site-nav a:hover {
+  color: var(--color-terracotta-dark);
+}
+
+.site-nav .header-cta {
+  min-height: 2.75rem;
+  padding: 0 var(--space-4);
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  font-weight: 800;
+}
+
+.site-nav .header-cta:hover {
+  background: var(--color-terracotta-dark);
+  color: var(--color-accent-ink);
+}
+
+.locale-switch {
+  grid-area: locale;
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  color: var(--color-text-soft);
+  font-size: var(--text-small);
+  font-weight: 750;
+}
+
+.locale-switch__option {
+  display: grid;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  place-items: center;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--ease-out-quart);
+}
+
+.locale-switch__option[aria-pressed="true"] {
+  color: var(--color-accent);
+}
+
+.hero {
+  position: relative;
+  display: grid;
+  min-height: calc(100svh - 7rem);
+  overflow: clip;
+  padding: clamp(3.5rem, 9vw, 7rem) var(--page-gutter) var(--space-16);
+}
+
+.hero__copy {
+  position: relative;
+  z-index: 3;
+  align-self: center;
+}
+
+.hero h1 {
+  display: grid;
+  max-width: 10ch;
+  margin-top: var(--space-4);
+  font-size: var(--text-display);
+  line-height: 0.86;
+}
+
+.hero h1 strong {
+  margin-top: 0.14em;
+  color: var(--color-accent);
+  font-size: 0.67em;
+  font-weight: 860;
+  line-height: 0.96;
+}
+
+.hero__body {
+  max-width: 39rem;
+  margin-top: var(--space-6);
+  color: var(--color-text-soft);
+  font-size: var(--text-lead);
+  line-height: 1.55;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4) var(--space-6);
+  margin-top: var(--space-8);
+}
+
+.primary-cta,
+.launch-status {
+  display: inline-flex;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.25rem;
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  font-size: var(--text-small);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.primary-cta {
+  box-shadow: 0 0.8rem 1.8rem oklch(44% 0.135 37 / 0.18);
+  transition:
+    background var(--duration-fast) var(--ease-out-quart),
+    transform var(--duration-state) var(--ease-out-quart);
+}
+
+.primary-cta:hover {
+  background: var(--color-terracotta-dark);
+  transform: translateY(-0.12rem);
+}
+
+.scroll-cue {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-terracotta-dark);
+  font-size: var(--text-small);
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.scroll-cue svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  transition: transform var(--duration-state) var(--ease-out-quart);
+}
+
+.scroll-cue:hover svg {
+  transform: translateY(0.25rem);
+}
+
+.trust-line,
+.launch-notes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  max-width: 41rem;
+  margin-top: var(--space-6);
+  color: var(--color-text-soft);
+  font-size: var(--text-caption);
+  font-weight: 650;
+}
+
+.trust-line i,
+.launch-notes i {
+  width: 0.25rem;
+  height: 0.25rem;
+  border-radius: 50%;
+  background: currentcolor;
+}
+
+.hero__visual {
+  position: relative;
+  min-height: 30rem;
+  margin-top: var(--space-8);
+}
+
+.hero__sun {
+  position: absolute;
+  top: 4%;
+  left: 20%;
+  width: clamp(20rem, 82vw, 37rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+.hero__devices {
+  position: absolute;
+  inset: 0;
+  transform: translate3d(var(--shift-x, 0), var(--shift-y, 0), 0);
+  transition: transform 700ms var(--ease-out-expo);
+}
+
+.hero__devices.is-moving {
+  will-change: transform;
+}
+
+.bridge {
+  display: grid;
+  gap: var(--space-12);
+  padding: var(--space-24) var(--page-gutter);
+  background: var(--color-espresso);
+  color: var(--color-cream-0);
+}
+
+.bridge__diagram {
+  position: relative;
+  min-height: 16rem;
+  max-width: 25rem;
+}
+
+.bridge__node {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  width: 5rem;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 0.18rem solid var(--color-accent);
+  border-radius: 50%;
+  background: var(--color-espresso);
+  color: var(--color-cream-0);
+  font-size: 1.7rem;
+}
+
+.bridge__node--plan {
+  top: 0;
+  left: calc(50% - 2.5rem);
+}
+
+.bridge__node--shop {
+  bottom: 0;
+  left: 4%;
+}
+
+.bridge__node--pantry {
+  right: 4%;
+  bottom: 0;
+}
+
+.bridge__path {
+  position: absolute;
+  bottom: 2.35rem;
+  left: 18%;
+  width: 64%;
+  height: 11rem;
+  border: 0.18rem solid var(--color-accent);
+  border-top: 0;
+  border-radius: 0 0 10rem 10rem;
+}
+
+.bridge__path--b {
+  bottom: 3.9rem;
+  left: 29%;
+  width: 42%;
+  height: 11rem;
+  border-width: 0.18rem 0 0;
+  border-radius: 50%;
+  transform: rotate(90deg);
+}
+
+.bridge__copy {
+  max-width: 45rem;
+}
+
+.bridge h2 {
+  margin-top: var(--space-4);
+  font-size: clamp(2.7rem, 1.9rem + 3.6vw, 5.8rem);
+}
+
+.bridge__copy > p:last-child {
+  max-width: 43rem;
+  margin-top: var(--space-6);
+  color: var(--color-cream-3);
+  font-size: var(--text-lead);
+  line-height: 1.6;
+}
+
+.flow {
+  padding: var(--space-24) var(--page-gutter) var(--space-16);
+  background: var(--color-surface);
+}
+
+.flow__header,
+.everyday__header {
+  display: grid;
+  gap: var(--space-6);
+  max-width: var(--page-max);
+  margin: 0 auto var(--space-16);
+}
+
+.flow__header h2,
+.features__header h2,
+.everyday__header h2,
+.privacy__header h2 {
+  max-width: 12ch;
+  margin-top: var(--space-4);
+  font-size: var(--text-section);
+}
+
+.flow__header > p,
+.everyday__header > p {
+  max-width: 37rem;
+  color: var(--color-text-soft);
+  font-size: var(--text-lead);
+  line-height: 1.55;
+}
+
+.flow-step {
+  display: grid;
+  gap: var(--space-8);
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: var(--space-16) 0;
+  border-top: 1px solid var(--color-line);
+}
+
+.flow-step__copy {
+  align-self: center;
+}
+
+.flow-step__number {
+  color: var(--color-terracotta-dark);
+  font-size: var(--text-small);
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.flow-step__copy h3,
+.daily-moment__copy h3 {
+  max-width: 13ch;
+  margin-top: var(--space-4);
+  font-size: clamp(2.25rem, 1.8rem + 2vw, 4.5rem);
+  line-height: 1;
+}
+
+.flow-step__copy > p:not(.flow-step__number, .flow-step__outcome),
+.daily-moment__copy > p:not(.flow-step__number) {
+  max-width: 38rem;
+  margin-top: var(--space-6);
+  color: var(--color-text-soft);
+  font-size: var(--text-lead);
+  line-height: 1.58;
+}
+
+.flow-step__details {
+  display: grid;
+  gap: var(--space-3);
+  max-width: 36rem;
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.flow-step__details li {
+  position: relative;
+  padding-left: 1.4rem;
+  color: var(--color-text-soft);
+  line-height: 1.5;
+}
+
+.flow-step__details li::before {
+  position: absolute;
+  top: 0.65em;
+  left: 0;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--color-accent);
+  content: "";
+}
+
+.flow-step__outcome {
+  max-width: 35rem;
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-line);
+  color: var(--color-terracotta-dark);
+  font-size: var(--text-small);
+  font-weight: 800;
+}
+
+.product-stage {
+  display: grid;
+  min-height: 29rem;
+  place-items: center;
+  overflow: hidden;
+  padding: var(--space-8) var(--space-4);
+  border-radius: clamp(1.5rem, 4vw, 7rem);
+}
+
+.product-stage--plan,
+.product-stage--cooking {
+  background: var(--color-terracotta-soft);
+}
+
+.product-stage--shop {
+  background: var(--color-olive-soft);
+}
+
+.product-stage--receipt {
+  background: var(--color-honey);
+}
+
+.product-stage--deduction {
+  background: var(--color-espresso);
+}
+
+.deduction-flow {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-4);
+  width: min(100%, 33rem);
+  color: var(--color-cream-0);
+}
+
+.deduction-flow > svg {
+  width: 1.6rem;
+  height: 1.6rem;
+  color: var(--color-accent);
+}
+
+.deduction-flow__node {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  min-height: 5.5rem;
+  padding: var(--space-4) var(--space-6);
+  border: 1px solid var(--color-brown-2);
+  border-radius: var(--radius-medium);
+  color: var(--color-cream-0);
+}
+
+.deduction-flow__node span {
+  color: var(--color-terracotta-soft);
+  font-size: var(--text-caption);
+  font-weight: 850;
+}
+
+.deduction-flow__node b {
+  font-size: clamp(1.15rem, 1rem + 0.6vw, 1.55rem);
+}
+
+.deduction-flow__node--accent {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+}
+
+.deduction-flow__node--accent span {
+  color: var(--color-espresso);
+}
+
+.decision-callout {
+  display: grid;
+  gap: var(--space-6);
+  max-width: var(--page-max);
+  margin: var(--space-16) auto var(--space-8);
+  padding: clamp(2rem, 7vw, 6rem);
+  border-radius: var(--radius-large) clamp(3rem, 9vw, 9rem);
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+
+.decision-callout .eyebrow {
+  color: var(--color-espresso);
+}
+
+.decision-callout h3 {
+  max-width: 17ch;
+  font-size: clamp(2.3rem, 1.5rem + 3.5vw, 5.5rem);
+}
+
+.decision-callout > p:last-child {
+  max-width: 42rem;
+  color: var(--color-cream-0);
+  font-size: var(--text-lead);
+  line-height: 1.58;
+}
+
+.balance {
+  display: grid;
+  gap: var(--space-12);
+  overflow: hidden;
+  padding: var(--space-24) var(--page-gutter);
+  background: var(--color-page);
+}
+
+.balance__copy {
+  align-self: center;
+}
+
+.balance h2 {
+  max-width: 12ch;
+  margin-top: var(--space-4);
+  font-size: var(--text-section);
+}
+
+.section-lead {
+  max-width: 39rem;
+  margin-top: var(--space-6);
+  color: var(--color-text-soft);
+  font-size: var(--text-lead);
+  line-height: 1.58;
+}
+
+.proof-list {
+  display: grid;
+  gap: 0;
+  max-width: 42rem;
+  margin: var(--space-8) 0 0;
+  padding: 0;
+  border-top: 1px solid var(--color-line);
+  list-style: none;
+}
+
+.proof-list li {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.proof-list b {
+  color: var(--color-text);
+  font-size: var(--text-small);
+}
+
+.proof-list span {
+  color: var(--color-text-soft);
+  line-height: 1.5;
+}
+
+.balance__visual {
+  position: relative;
+  display: grid;
+  min-height: 42rem;
+  place-items: center;
+}
+
+.balance__shape {
+  position: absolute;
+  width: min(90vw, 35rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--color-honey);
+}
+
+.image-caption {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  max-width: 19rem;
+  padding: var(--space-4);
+  border-radius: var(--radius-medium);
+  background: var(--color-espresso);
+  color: var(--color-cream-0);
+  font-size: var(--text-small);
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+.loop {
+  padding: var(--space-24) var(--page-gutter);
+  background: var(--color-espresso);
+  color: var(--color-cream-0);
+}
+
+.loop__header,
+.ai-band__header {
+  max-width: var(--page-max);
+  margin: 0 auto var(--space-16);
+}
+
+.loop__header h2,
+.ai-band__header h2 {
+  max-width: 13ch;
+  margin-top: var(--space-4);
+  font-size: var(--text-section);
+}
+
+.loop__header > p:last-child,
+.ai-band__header > p:last-child {
+  max-width: 43rem;
+  margin-top: var(--space-6);
+  color: var(--color-cream-3);
+  font-size: var(--text-lead);
+  line-height: 1.58;
+}
+
+.loop__track {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  border-top: 1px solid var(--color-brown-2);
+}
+
+.loop__step {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-8) 0;
+  border-bottom: 1px solid var(--color-brown-2);
+}
+
+.loop__step > span,
+.daily-extra > span,
+.privacy__statements article > span {
+  color: var(--color-accent);
+  font-size: var(--text-caption);
+  font-weight: 850;
+}
+
+.loop__role {
+  color: var(--color-terracotta-soft);
+  font-size: var(--text-caption);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.loop__step h3 {
+  font-size: clamp(1.55rem, 1.3rem + 1vw, 2.4rem);
+}
+
+.loop__step > p:last-child {
+  max-width: 32rem;
+  color: var(--color-cream-3);
+  line-height: 1.55;
+}
+
+.learning-ledger {
+  max-width: var(--page-max);
+  margin: var(--space-16) auto 0;
+  padding: clamp(1.5rem, 5vw, 4rem);
+  border: 1px solid var(--color-brown-2);
+  border-radius: var(--radius-large);
+}
+
+.learning-row {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-6) 0;
+  border-bottom: 1px solid var(--color-brown-2);
+}
+
+.learning-row:last-child {
+  border-bottom: 0;
+}
+
+.learning-row h3 {
+  font-size: clamp(1.2rem, 1.1rem + 0.45vw, 1.55rem);
+}
+
+.learning-row p {
+  max-width: 35rem;
+  color: var(--color-cream-3);
+  line-height: 1.55;
+}
+
+.loop__closing {
+  max-width: 46rem;
+  margin: var(--space-12) auto 0;
+  color: var(--color-terracotta-soft);
+  font-size: var(--text-lead);
+  font-weight: 750;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.everyday {
+  padding: var(--space-24) var(--page-gutter);
+  background: var(--color-surface);
+}
+
+.daily-moment {
+  display: grid;
+  gap: var(--space-8);
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: var(--space-16) 0;
+  border-top: 1px solid var(--color-line);
+}
+
+.daily-moment__copy {
+  align-self: center;
+}
+
+.proof-list--compact {
+  margin-top: var(--space-6);
+}
+
+.proof-list--compact li {
+  padding: var(--space-3) 0;
+}
+
+.daily-moment__visual {
+  min-height: 35rem;
+}
+
+.daily-extras {
+  max-width: var(--page-max);
+  margin: var(--space-16) auto 0;
+  border-top: 1px solid var(--color-line);
+}
+
+.daily-extra {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-8) 0;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.daily-extra h3 {
+  max-width: 18ch;
+  font-size: clamp(1.45rem, 1.25rem + 0.75vw, 2rem);
+}
+
+.daily-extra p {
+  max-width: 34rem;
+  color: var(--color-text-soft);
+  line-height: 1.55;
+}
+
+.features {
+  padding: var(--space-24) var(--page-gutter);
+  background: var(--color-page);
+}
+
+.features__header {
+  max-width: var(--page-max);
+  margin: 0 auto var(--space-16);
+}
+
+.feature-list {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+.feature-row {
+  display: grid;
+  grid-template-columns: 2.2rem 1fr;
+  gap: var(--space-3) var(--space-4);
+  padding: var(--space-8) 0;
+  border-top: 1px solid var(--color-line);
+}
+
+.feature-row:last-child {
+  border-bottom: 1px solid var(--color-line);
+}
+
+.feature-row > span {
+  color: var(--color-terracotta-dark);
+  font-size: var(--text-small);
+  font-weight: 850;
+}
+
+.feature-row h3 {
+  font-size: clamp(1.45rem, 1.25rem + 0.75vw, 2rem);
+  line-height: 1.08;
+}
+
+.feature-row p {
+  grid-column: 2;
+  max-width: 36rem;
+  color: var(--color-text-soft);
+  line-height: 1.55;
+}
+
+.ai-band {
+  padding: var(--space-24) var(--page-gutter);
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+
+.ai-band__header > p:last-child {
+  color: var(--color-cream-0);
+}
+
+.ai-ledger {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: 0;
+  border-top: 1px solid oklch(98% 0.012 72 / 0.4);
+  list-style: none;
+}
+
+.ai-ledger li {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr;
+  gap: var(--space-4);
+  padding: var(--space-8) 0;
+  border-bottom: 1px solid oklch(98% 0.012 72 / 0.4);
+}
+
+.ai-ledger li > span {
+  color: var(--color-espresso);
+  font-size: var(--text-small);
+  font-weight: 850;
+}
+
+.ai-ledger h3 {
+  font-size: clamp(1.45rem, 1.25rem + 0.75vw, 2.1rem);
+}
+
+.ai-ledger p {
+  max-width: 38rem;
+  margin-top: var(--space-3);
+  color: var(--color-cream-0);
+  line-height: 1.55;
+}
+
+.privacy {
+  padding: var(--space-24) var(--page-gutter);
+  background: var(--color-surface);
+}
+
+.privacy__header {
+  max-width: var(--page-max);
+  margin: 0 auto var(--space-16);
+}
+
+.privacy__statements {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  border-top: 1px solid var(--color-line);
+}
+
+.privacy__statements article {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-8) 0;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.privacy__statements h3 {
+  font-size: clamp(1.45rem, 1.25rem + 0.75vw, 2rem);
+}
+
+.privacy__statements p {
+  max-width: 33rem;
+  color: var(--color-text-soft);
+  line-height: 1.55;
+}
+
+.closing {
+  position: relative;
+  display: grid;
+  min-height: 48rem;
+  overflow: hidden;
+  padding: var(--space-24) var(--page-gutter);
+  background: var(--color-espresso);
+  color: var(--color-cream-0);
+}
+
+.closing__copy {
+  position: relative;
+  z-index: 2;
+  align-self: center;
+}
+
+.closing h2 {
+  display: grid;
+  max-width: 11ch;
+  margin-top: var(--space-4);
+  font-size: var(--text-section);
+}
+
+.closing h2 strong {
+  margin-top: 0.15em;
+  color: var(--color-accent);
+}
+
+.closing__copy > p:not(.eyebrow, .launch-notes) {
+  max-width: 39rem;
+  margin-top: var(--space-6);
+  color: var(--color-cream-3);
+  font-size: var(--text-lead);
+  line-height: 1.58;
+}
+
+.launch-status {
+  margin-top: var(--space-8);
+}
+
+.launch-notes {
+  color: var(--color-cream-3);
+}
+
+.closing__mark {
+  position: absolute;
+  right: -12rem;
+  bottom: -12rem;
+  width: 35rem;
+  aspect-ratio: 1;
+  border: 1px solid var(--color-brown-2);
+  border-radius: 50%;
+}
+
+.closing__mark-line {
+  position: absolute;
+  top: 50%;
+  left: 8%;
+  width: 84%;
+  height: 1px;
+  background: var(--color-accent);
+}
+
+.closing__mark-line--a {
+  transform: rotate(45deg);
+}
+
+.closing__mark-line--b {
+  transform: rotate(-45deg);
+}
+
+.closing__mark-dot {
+  position: absolute;
+  top: calc(50% - 3rem);
+  left: calc(50% - 3rem);
+  width: 6rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+.site-footer {
+  display: grid;
+  gap: var(--space-8);
+  padding: var(--space-12) var(--page-gutter)
+    max(var(--space-8), env(safe-area-inset-bottom));
+  background: var(--color-cream-2);
+}
+
+.wordmark--footer {
+  font-size: clamp(3.5rem, 2.8rem + 3vw, 6.8rem);
+}
+
+.site-footer p {
+  max-width: 27rem;
+  color: var(--color-text-soft);
+}
+
+.site-footer__meta {
+  display: grid;
+  gap: var(--space-3);
+  align-content: end;
+}
+
+.site-footer__legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-6);
+}
+
+.site-footer__legal a {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  color: var(--color-text);
+  font-size: var(--text-small);
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.device-shot {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  aspect-ratio: 1170 / 2532;
+  border: 0.36rem solid var(--color-espresso);
+  border-radius: var(--radius-phone);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-phone);
+}
+
+.device-shot::after {
+  position: absolute;
+  inset: 0;
+  border: 1px solid oklch(98% 0.012 72 / 0.2);
+  border-radius: calc(var(--radius-phone) - 0.36rem);
+  box-shadow: inset 0 0 0 1px oklch(19% 0.025 43 / 0.13);
+  content: "";
+  pointer-events: none;
+}
+
+.device-shot img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.device-shot--weekly,
+.device-shot--shopping {
+  position: absolute;
+  width: 15.5rem;
+}
+
+.device-shot--weekly {
+  z-index: 2;
+  top: 1.5rem;
+  left: 0;
+  transform: rotate(-5deg);
+}
+
+.device-shot--shopping {
+  z-index: 1;
+  top: 0;
+  right: -3.5rem;
+  transform: rotate(5deg);
+}
+
+.screen-pair {
+  position: relative;
+  width: min(100%, 39rem);
+  height: 32rem;
+}
+
+.screen-pair .device-shot {
+  position: absolute;
+  width: min(47%, 17rem);
+  border-color: var(--color-brown-3);
+}
+
+.device-shot--generator {
+  z-index: 2;
+  bottom: -7rem;
+  left: 7%;
+  transform: rotate(-4deg);
+}
+
+.device-shot--preferences {
+  top: 1rem;
+  right: 7%;
+  transform: rotate(4.5deg);
+}
+
+.device-shot--flow {
+  width: min(68%, 18rem);
+  border-color: var(--color-brown-3);
+}
+
+.product-stage--shop .device-shot--flow {
+  margin-bottom: -10rem;
+  transform: rotate(-2.5deg);
+}
+
+.device-shot--balance {
+  z-index: 2;
+  width: min(68vw, 19rem);
+  border-color: var(--color-brown-3);
+  transform: rotate(3deg);
+}
+
+.device-shot--daily {
+  width: min(68%, 18rem);
+  margin-bottom: -10rem;
+  border-color: var(--color-brown-3);
+}
+
+.daily-moment--store .device-shot--daily {
+  transform: rotate(-2.5deg);
+}
+
+.daily-moment--cooking .device-shot--daily {
+  transform: rotate(2.5deg);
+}
+
+.daily-moment--receipt .device-shot--daily {
+  transform: rotate(-2deg);
+}
+
+@media (min-width: 40rem) {
+  .device-shot--weekly,
+  .device-shot--shopping {
+    width: 18rem;
   }
 
-  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  .device-shot--weekly {
+    left: 1rem;
+  }
 
-  h1, h2, h3 { line-height: 1.12; text-wrap: balance; margin: 0; }
-  h1 { font-size: clamp(2.3rem, 5.4vw, 3.7rem); font-weight: 800; letter-spacing: -0.022em; }
-  h2 { font-size: clamp(1.7rem, 3.6vw, 2.5rem); font-weight: 800; letter-spacing: -0.018em; }
-  h3 { font-size: 1.12rem; font-weight: 700; letter-spacing: -0.01em; }
-  p { margin: 0; }
+  .device-shot--shopping {
+    right: 1rem;
+  }
 
-  .eyebrow {
-    display: inline-block;
-    font-size: 0.74rem;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 14px;
+  .screen-pair {
+    height: 36rem;
   }
-  .accent-word { color: var(--accent); }
-  .lede { color: var(--ink-2); font-size: 1.11rem; max-width: 56ch; }
 
-  /* ================= Header ================= */
-  header.site {
-    position: sticky; top: 0; z-index: 40;
-    background: color-mix(in srgb, var(--bg) 82%, transparent);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border-bottom: 1px solid var(--line);
+  .screen-pair .device-shot {
+    width: min(46%, 18rem);
   }
-  .nav { display: flex; align-items: center; gap: 28px; padding: 14px 0; }
-  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.15rem; letter-spacing: -0.3px; color: var(--ink); text-decoration: none; }
-  .brand-mark {
-    width: 34px; height: 34px; border-radius: 9px;
-    background: var(--accent);
-    display: grid; place-items: center; flex: none;
-  }
-  .nav-links { display: flex; gap: 22px; margin-left: auto; }
-  .nav-links a { color: var(--ink-2); text-decoration: none; font-size: 0.93rem; font-weight: 600; }
-  .nav-links a:hover, .nav-links a:focus-visible { color: var(--accent); }
-  .nav-cta {
-    background: var(--accent); color: var(--accent-ink) !important;
-    padding: 8px 16px; border-radius: 999px; font-weight: 700;
-    font-size: 0.93rem; text-decoration: none; flex: none;
-  }
-  .theme-toggle {
-    flex: none; width: 34px; height: 34px; border-radius: 999px; padding: 0;
-    background: var(--surface); border: 1px solid var(--line); color: var(--ink-2);
-    display: grid; place-items: center; cursor: pointer;
-  }
-  .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
-  .theme-toggle svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
-  .theme-toggle .i-moon { display: none; }
-  :root[data-ui="dark"] .theme-toggle .i-sun { display: none; }
-  :root[data-ui="dark"] .theme-toggle .i-moon { display: block; }
-  @media (max-width: 860px) { .nav-links { display: none; } }
 
-  .version-bar { border-bottom: 1px solid var(--line); }
-  .version-bar .wrap { display: flex; justify-content: flex-end; }
-  .version-switch {
-    display: inline-flex; overflow: hidden;
-    border: 1px solid var(--line); border-width: 0 1px;
-    color: var(--ink-2); font-size: 0.76rem; font-weight: 700;
+  .device-shot--flow,
+  .device-shot--daily {
+    width: min(54%, 19rem);
   }
-  .version-switch__item {
-    display: inline-flex; min-height: 44px; align-items: center;
-    padding: 0 14px; color: inherit; text-decoration: none;
-  }
-  .version-switch__item[aria-current="page"] {
-    background: var(--ink); color: var(--bg);
-  }
-  .version-switch a:hover { color: var(--accent); }
+}
 
-  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
-
-  /* ================= Hero ================= */
-  .hero { padding: 68px 0 26px; overflow: hidden; }
-  .hero-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 48px; align-items: center; }
-  @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; } }
-  .hero .lede { margin-top: 20px; }
-  .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; align-items: center; }
-  .btn {
-    display: inline-flex; align-items: center; gap: 9px;
-    padding: 13px 24px; border-radius: 999px;
-    font-weight: 700; font-size: 0.99rem; text-decoration: none;
-    border: none; cursor: pointer;
+@media (min-width: 75rem) {
+  .device-shot--weekly,
+  .device-shot--shopping {
+    width: 20rem;
   }
-  .btn-primary { background: var(--accent); color: var(--accent-ink); box-shadow: var(--shadow-card); }
-  .btn-primary:hover { filter: brightness(1.06); }
-  .btn-ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
-  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
-  .trust-line { margin-top: 18px; color: var(--muted); font-size: 0.88rem; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .trust-line .dot { width: 4px; height: 4px; border-radius: 999px; background: var(--muted); display: inline-block; }
 
-  /* ================= Screenshots ================= */
-  .shot {
-    width: 320px; max-width: 100%; margin: 0 auto;
-    border: 10px solid #2A241E; border-radius: 42px; overflow: hidden;
-    box-shadow: var(--shadow-soft); background: #F2EDE3;
+  .device-shot--weekly {
+    left: 0;
   }
-  .shot img { display: block; width: 100%; height: auto; }
-  .shotfig { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 14px; }
-  .shot-cap { color: var(--muted); font-size: 0.85rem; max-width: 36ch; text-align: center; line-height: 1.45; }
-  .engine-shot { margin-top: 40px; }
 
-  /* ================= Sections ================= */
-  section { padding: 80px 0; }
-  section.tight { padding: 58px 0; }
-  .section-head { max-width: 640px; margin-bottom: 46px; }
-  .section-head .lede { margin-top: 14px; }
+  .device-shot--shopping {
+    right: 0;
+  }
 
-  /* engine: the three generations */
-  .engine-band { background: var(--bg-deep); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-  .engine-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-  @media (max-width: 900px) { .engine-grid { grid-template-columns: 1fr; } }
-  .engine-card {
-    background: var(--surface); border-radius: var(--radius); padding: 26px 24px;
-    box-shadow: var(--shadow-card); display: flex; flex-direction: column; gap: 9px;
+  .screen-pair {
+    height: 40rem;
   }
-  .engine-card .step-n {
-    font-size: 0.72rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--accent); display: flex; align-items: center; gap: 8px;
-  }
-  .engine-card .step-n b {
-    width: 22px; height: 22px; border-radius: 999px; background: var(--accent); color: var(--accent-ink);
-    display: grid; place-items: center; font-size: 0.72rem; flex: none;
-  }
-  .engine-card h3 { font-size: 1.16rem; }
-  .engine-card p { color: var(--ink-2); font-size: 0.95rem; }
-  .engine-card .out {
-    margin-top: auto; padding-top: 15px; border-top: 1px solid var(--line);
-    display: flex; gap: 11px; align-items: flex-start;
-  }
-  .engine-card .out .yield {
-    flex: none; width: 23px; height: 23px; border-radius: 7px; margin-top: 1px;
-    background: var(--accent-soft); color: var(--accent);
-    display: grid; place-items: center; font-size: 0.8rem; font-weight: 800;
-  }
-  .engine-card .out .what { display: block; font-size: 0.92rem; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
-  .engine-card .out .how { display: block; font-size: 0.82rem; color: var(--muted); margin-top: 1px; }
-  .pull {
-    margin-top: 30px; border-left: 3px solid var(--accent); padding: 4px 0 4px 18px;
-    font-size: 1.08rem; font-weight: 600; color: var(--ink); max-width: 62ch;
-  }
-  .pull span { color: var(--muted); font-weight: 500; }
 
-  /* pillars */
-  .pillar { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; padding: 44px 0; }
-  @media (max-width: 900px) { .pillar { grid-template-columns: 1fr; gap: 30px; } .pillar .pillar-visual { order: 2; } }
-  .pillar-kicker { font-size: 0.78rem; font-weight: 800; letter-spacing: 0.12em; color: var(--muted); text-transform: uppercase; }
-  .pillar h2 { margin: 10px 0 14px; }
-  .pillar .lede { font-size: 1.03rem; }
-  .feature-list { list-style: none; margin: 22px 0 0; padding: 0; display: grid; gap: 11px; }
-  .feature-list li { display: flex; gap: 11px; align-items: flex-start; color: var(--ink-2); font-size: 0.96rem; }
-  .feature-list .tick {
-    flex: none; width: 20px; height: 20px; border-radius: 999px; margin-top: 2px;
-    background: var(--green-soft); color: var(--green);
-    display: grid; place-items: center; font-size: 11px; font-weight: 900;
+  .screen-pair .device-shot,
+  .device-shot--flow,
+  .device-shot--daily,
+  .device-shot--balance {
+    width: 20rem;
   }
-  .feature-list b { color: var(--ink); }
+}
 
-  /* loop */
-  .loop-band { background: var(--bg-deep); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-  .loop-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-  @media (max-width: 820px) { .loop-grid { grid-template-columns: 1fr; } }
-  .loop-card { background: var(--surface); border-radius: var(--radius); padding: 24px 22px; box-shadow: var(--shadow-card); }
-  .loop-step { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; font-size: 21px; margin-bottom: 13px; background: var(--accent-soft); }
-  .loop-card h3 { margin-bottom: 6px; }
-  .loop-card .role { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 9px; }
-  .loop-card p { color: var(--ink-2); font-size: 0.94rem; }
-  .learn {
-    margin-top: 30px; background: var(--surface); border-radius: var(--radius);
-    padding: 26px 24px; box-shadow: var(--shadow-card);
+@media (max-width: 30rem) {
+  .device-shot {
+    border-width: 0.3rem;
+    border-radius: 2.25rem;
   }
-  .learn-label {
-    display: inline-block; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.13em;
-    text-transform: uppercase; color: var(--accent); margin-bottom: 16px;
+
+  .device-shot::after {
+    border-radius: calc(2.25rem - 0.3rem);
   }
-  .learn-items { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px 28px; }
-  @media (max-width: 820px) { .learn-items { grid-template-columns: 1fr; } }
-  .learn-items p { color: var(--ink-2); font-size: 0.92rem; }
-  .learn-items b { display: block; color: var(--ink); margin-bottom: 2px; }
-  .loop-again { text-align: center; margin: 26px auto 0; color: var(--muted); font-weight: 600; font-size: 1rem; max-width: 62ch; line-height: 1.5; }
-  .loop-again b { color: var(--ink); font-weight: 800; }
 
-  /* cards grid */
-  .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  @media (max-width: 980px) { .card-grid { grid-template-columns: repeat(2, 1fr); } }
-  @media (max-width: 640px) { .card-grid { grid-template-columns: 1fr; } }
-  .flat-card {
-    background: var(--surface); border-radius: var(--radius); padding: 24px 22px;
-    box-shadow: var(--shadow-card); border: 1px solid var(--line);
-    display: flex; flex-direction: column; gap: 10px;
+  .device-shot--weekly,
+  .device-shot--shopping {
+    width: 13.25rem;
   }
-  .flat-icon { width: 40px; height: 40px; border-radius: 11px; background: var(--accent-soft); display: grid; place-items: center; font-size: 20px; }
-  .flat-card p { color: var(--ink-2); font-size: 0.92rem; }
 
-  /* AI band */
-  .ai-band { background: var(--bg-deep); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-  .ai-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px 28px; margin-top: 8px; }
-  @media (max-width: 760px) { .ai-grid { grid-template-columns: 1fr; } }
-  .ai-item { display: flex; gap: 14px; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid var(--line); }
-  .ai-item .n {
-    flex: none; width: 30px; height: 30px; border-radius: 999px; background: var(--accent); color: var(--accent-ink);
-    display: grid; place-items: center; font-weight: 800; font-size: 0.85rem;
+  .device-shot--weekly {
+    left: -1.25rem;
   }
-  .ai-item h3 { font-size: 1rem; margin-bottom: 3px; }
-  .ai-item p { color: var(--ink-2); font-size: 0.92rem; }
 
-  /* privacy band */
-  .privacy { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  @media (max-width: 760px) { .privacy { grid-template-columns: 1fr; } }
-  .privacy-card { text-align: center; padding: 28px 20px; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow-card); }
-  .privacy-card .big { font-size: 26px; margin-bottom: 8px; }
-  .privacy-card h3 { margin-bottom: 6px; }
-  .privacy-card p { color: var(--ink-2); font-size: 0.92rem; }
-
-  /* final CTA */
-  .final { text-align: center; padding: 92px 0 100px; }
-  .final h2 { font-size: clamp(2rem, 4.6vw, 3.1rem); }
-  .final .lede { margin: 18px auto 0; }
-  .final .cta-row { justify-content: center; }
-
-  footer.site { border-top: 1px solid var(--line); padding: 34px 0 44px; color: var(--muted); font-size: 0.88rem; }
-  .foot { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-  .foot-links { margin-left: auto; display: flex; gap: 18px; }
-  .foot a { color: var(--ink-2); text-decoration: none; font-weight: 600; }
-  .foot a:hover { color: var(--accent); }
-  .foot .brand { font-size: 1rem; }
-
-  /* motion: visible at rest, slides into place */
-  .reveal { transform: translateY(12px); transition: transform 0.5s ease; }
-  .reveal.in { transform: none; }
-  @media (prefers-reduced-motion: reduce) {
-    html { scroll-behavior: auto; }
-    .reveal { transform: none; transition: none; }
+  .device-shot--shopping {
+    right: -2.25rem;
   }
-</style>
-</head>
-<body>
 
-<script>
-  /* Applica subito la scelta ricordata, così il tema scuro non arriva a pagina già dipinta. */
-  (function () {
-    try {
-      if (localStorage.getItem("madia-theme") === "dark") {
-        document.documentElement.setAttribute("data-ui", "dark");
-      }
-    } catch (e) {}
-  })();
-</script>
+  .screen-pair {
+    height: 26rem;
+  }
 
-<header class="site">
-  <div class="version-bar">
-    <div class="wrap">
-      <nav class="version-switch" aria-label="Scegli la versione della landing">
-        <span class="version-switch__item" aria-current="page">Classica</span>
-        <a class="version-switch__item" href="editoriale/">Editoriale</a>
-      </nav>
-    </div>
-  </div>
-  <div class="wrap nav">
-    <a class="brand" href="#top" aria-label="Madia — torna su">
-      <span class="brand-mark" aria-hidden="true">
-        <svg width="22" height="22" viewBox="0 0 100 100">
-          <rect x="22" y="30" width="56" height="36" rx="7" fill="#FFF8F2"></rect>
-          <rect x="28" y="66" width="5" height="8" rx="1.5" fill="#FFF8F2"></rect>
-          <rect x="67" y="66" width="5" height="8" rx="1.5" fill="#FFF8F2"></rect>
-          <line x1="50" y1="34" x2="50" y2="62" stroke="var(--accent)" stroke-width="3"></line>
-        </svg>
-      </span>
-      Madia
+  .screen-pair .device-shot {
+    width: 12.6rem;
+  }
+
+  .device-shot--generator {
+    bottom: -4.5rem;
+    left: -0.5rem;
+  }
+
+  .device-shot--preferences {
+    top: 0.75rem;
+    right: -0.5rem;
+  }
+
+  .device-shot--flow,
+  .device-shot--daily {
+    width: min(76%, 15rem);
+  }
+}
+
+
+@media (min-width: 40rem) {
+  .hero__visual {
+    min-height: 37rem;
+  }
+
+  .hero__devices {
+    width: 34rem;
+    margin: 0 auto;
+  }
+
+  .feature-row {
+    grid-template-columns: 3rem minmax(12rem, 0.8fr) minmax(16rem, 1.2fr);
+    gap: var(--space-6);
+    align-items: start;
+  }
+
+  .feature-row p {
+    grid-column: 3;
+  }
+
+  .daily-extra,
+  .privacy__statements article {
+    grid-template-columns: 3rem minmax(12rem, 0.75fr) minmax(16rem, 1.25fr);
+    gap: var(--space-6);
+    align-items: start;
+  }
+
+  .daily-extra p,
+  .privacy__statements article p {
+    grid-column: 3;
+  }
+
+  .site-footer {
+    grid-template-columns: 1fr 1fr;
+    align-items: end;
+  }
+}
+
+@media (min-width: 52rem) {
+  .hero {
+    grid-template-columns: minmax(0, 1.04fr) minmax(24rem, 0.96fr);
+    gap: var(--space-6);
+    align-items: center;
+    padding-top: var(--space-12);
+    padding-bottom: var(--space-12);
+  }
+
+  .hero__visual {
+    min-height: 42rem;
+    margin-top: 0;
+  }
+
+  .hero__sun {
+    top: 10%;
+    left: 0;
+    width: min(42vw, 39rem);
+  }
+
+  .hero__devices {
+    top: 1.5rem;
+    right: 0;
+    width: 35rem;
+  }
+
+  .bridge {
+    grid-template-columns: minmax(18rem, 0.75fr) minmax(0, 1.25fr);
+    gap: clamp(3rem, 9vw, 10rem);
+    align-items: center;
+    min-height: 40rem;
+  }
+
+  .bridge__diagram {
+    min-height: 22rem;
+  }
+
+  .bridge__node {
+    width: 6.5rem;
+  }
+
+  .bridge__node--plan {
+    left: calc(50% - 3.25rem);
+  }
+
+  .bridge__path {
+    bottom: 3rem;
+    height: 15rem;
+  }
+
+  .bridge__path--b {
+    bottom: 6rem;
+    height: 14rem;
+  }
+
+  .flow__header,
+  .everyday__header {
+    grid-template-columns: minmax(0, 1.15fr) minmax(18rem, 0.85fr);
+    gap: var(--space-12);
+    align-items: end;
+  }
+
+  .flow-step,
+  .daily-moment {
+    grid-template-columns: minmax(18rem, 0.76fr) minmax(26rem, 1.24fr);
+    gap: clamp(3rem, 7vw, 8rem);
+    min-height: 48rem;
+    padding: var(--space-24) 0;
+  }
+
+  .flow-step--shop .flow-step__copy,
+  .daily-moment--cooking .daily-moment__copy {
+    order: 2;
+  }
+
+  .flow-step--shop .product-stage,
+  .daily-moment--cooking .daily-moment__visual {
+    order: 1;
+  }
+
+  .decision-callout {
+    grid-template-columns: minmax(0, 1.2fr) minmax(19rem, 0.8fr);
+    align-items: end;
+  }
+
+  .decision-callout .eyebrow {
+    grid-column: 1 / -1;
+  }
+
+  .balance {
+    grid-template-columns: minmax(0, 0.95fr) minmax(22rem, 1.05fr);
+    gap: clamp(3rem, 8vw, 9rem);
+    align-items: center;
+    min-height: 54rem;
+  }
+
+  .loop__track {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(2rem, 4vw, 5rem);
+  }
+
+  .loop__step {
+    align-content: start;
+    border-bottom: 1px solid var(--color-brown-2);
+  }
+
+  .learning-row {
+    grid-template-columns: minmax(14rem, 0.8fr) minmax(18rem, 1.2fr);
+    gap: var(--space-8);
+    align-items: start;
+  }
+
+  .daily-extras {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(2rem, 4vw, 5rem);
+  }
+
+  .daily-extra {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-content: start;
+  }
+
+  .daily-extra p {
+    grid-column: 1;
+  }
+
+  .features__header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .features__header h2 {
+    grid-column: 2;
+  }
+
+  .privacy__statements {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(2rem, 4vw, 5rem);
+  }
+
+  .privacy__statements article {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-content: start;
+  }
+
+  .privacy__statements article p {
+    grid-column: 1;
+  }
+
+  .closing {
+    min-height: 52rem;
+  }
+
+  .closing__mark {
+    right: -5rem;
+    bottom: -14rem;
+    width: 48rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  html {
+    scroll-padding-top: 5.5rem;
+  }
+
+  .site-header {
+    grid-template-areas: "brand nav locale";
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: clamp(2rem, 4vw, 5rem);
+    min-height: 5.5rem;
+  }
+
+  .site-nav {
+    justify-content: flex-end;
+    padding-bottom: 0;
+  }
+}
+
+@media (min-width: 75rem) {
+  .wordmark {
+    font-size: 2rem;
+  }
+
+  .hero {
+    min-height: calc(100svh - 5.5rem);
+    max-width: 112rem;
+    margin: 0 auto;
+  }
+
+  .hero__visual {
+    min-height: 46rem;
+  }
+
+  .hero__devices {
+    width: 40rem;
+  }
+
+  .product-stage {
+    min-height: 38rem;
+    padding: var(--space-12);
+  }
+
+  .daily-moment__visual {
+    min-height: 42rem;
+  }
+
+  .ai-ledger li {
+    grid-template-columns: 3rem minmax(0, 1fr);
+    padding: var(--space-10, 2.5rem) 0;
+  }
+
+  .ai-ledger li > div {
+    display: grid;
+    grid-template-columns: minmax(17rem, 0.8fr) minmax(24rem, 1.2fr);
+    gap: var(--space-12);
+    align-items: start;
+  }
+
+  .ai-ledger p {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 30rem) {
+  .site-nav {
+    margin-right: calc(var(--page-gutter) * -1);
+    padding-right: var(--page-gutter);
+  }
+
+  .hero__visual {
+    min-height: 27rem;
+    margin-right: -1rem;
+    margin-left: -1rem;
+  }
+
+  .hero__sun {
+    left: 16%;
+    width: 20rem;
+  }
+
+  .primary-cta {
+    width: 100%;
+  }
+
+  .balance__visual {
+    min-height: 36rem;
+  }
+
+  .image-caption {
+    right: -0.25rem;
+    max-width: 15rem;
+  }
+
+  .daily-moment__visual {
+    min-height: 31rem;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .locale-switch__option:hover,
+  .site-footer__legal a:hover {
+    color: var(--color-terracotta-dark);
+  }
+}
+
+
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content" data-i18n="a11y.skip">
+      Vai al contenuto
     </a>
-    <nav class="nav-links" aria-label="Sezioni">
-      <a href="#motore">Come funziona</a>
-      <a href="#equilibrio">Equilibrio</a>
-      <a href="#quotidiano">Ogni giorno</a>
-      <a href="#ai">L'AI in cucina</a>
-    </nav>
-    <button class="theme-toggle" type="button" aria-pressed="false" aria-label="Attiva il tema scuro">
-      <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.7v2.1M12 19.2v2.1M2.7 12h2.1M19.2 12h2.1M5.5 5.5l1.5 1.5M17 17l1.5 1.5M18.5 5.5L17 7M7 17l-1.5 1.5"/></svg>
-      <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 14.3A8.3 8.3 0 0 1 9.7 4a8.4 8.4 0 1 0 10.3 10.3z"/></svg>
-    </button>
-    <a class="nav-cta" href="#scarica">Presto su App Store</a>
-  </div>
-</header>
 
-<main id="top">
+    <header class="site-header" id="top">
+      <a
+        class="wordmark"
+        href="#top"
+        data-i18n-aria-label="nav.home"
+        aria-label="Torna all'inizio"
+      >madia<span>.</span></a>
 
-  <!-- ================= HERO ================= -->
-  <section class="hero">
-    <div class="wrap hero-grid">
-      <div>
-        <span class="eyebrow">Pianificazione · Lista · Dispensa · Ricette</span>
-        <h1>La settimana in cucina, <span class="accent-word">quasi in automatico</span>.</h1>
-        <p class="lede">Madia genera la pianificazione dei pasti, ne ricava la lista della spesa e mette davanti le ricette che svuotano la dispensa. Smetti di decidere cosa comprare e cosa cucinare: resta solo la parte bella. Equilibrata come serve, sui tuoi gusti.</p>
-        <div class="cta-row">
-          <a class="btn btn-primary" href="#scarica">Presto su App Store</a>
-          <a class="btn btn-ghost" href="#motore">Guarda come funziona</a>
+      <nav
+        class="site-nav"
+        aria-label="Navigazione principale"
+        data-i18n-aria-label="nav.aria"
+      >
+        <a href="#flow" data-i18n="nav.flow">Come funziona</a>
+        <a href="#balance" data-i18n="nav.balance">Equilibrio</a>
+        <a href="#everyday" data-i18n="nav.everyday">Ogni giorno</a>
+        <a href="#ai" data-i18n="nav.ai">L'AI in cucina</a>
+        <a class="header-cta" href="#launch" data-i18n="cta.soon">
+          Presto su App Store
+        </a>
+      </nav>
+
+      <div
+        class="locale-switch"
+        role="group"
+        aria-label="Scegli la lingua"
+        data-i18n-aria-label="language.control"
+      >
+        <button
+          class="locale-switch__option"
+          type="button"
+          data-locale="it"
+          aria-pressed="true"
+          aria-label="Passa all'italiano"
+          data-i18n-aria-label="language.selectIt"
+        >IT</button>
+        <span aria-hidden="true">/</span>
+        <button
+          class="locale-switch__option"
+          type="button"
+          data-locale="en"
+          aria-pressed="false"
+          aria-label="Passa all'inglese"
+          data-i18n-aria-label="language.selectEn"
+        >EN</button>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero__copy reveal">
+          <p class="eyebrow" data-i18n="hero.eyebrow">
+            Pianificazione · Lista · Dispensa · Ricette
+          </p>
+          <h1 id="hero-title">
+            <span data-i18n="hero.titleLine1">La settimana in cucina,</span>
+            <strong data-i18n="hero.titleEmphasis">
+              quasi in automatico.
+            </strong>
+          </h1>
+          <p class="hero__body" data-i18n="hero.body">
+            Madia genera la pianificazione dei pasti, ne ricava la lista della
+            spesa e mette davanti le ricette che svuotano la dispensa. Meno
+            decisioni ogni sera, più spazio per la parte bella: cucinare.
+          </p>
+          <div class="hero__actions">
+            <a class="primary-cta" href="#launch" data-i18n="cta.soon">
+              Presto su App Store
+            </a>
+            <a class="scroll-cue" href="#flow">
+              <span data-i18n="hero.secondary">Guarda come funziona</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"></path><path d="m19 12-7 7-7-7"></path></svg>
+            </a>
+          </div>
+          <p class="trust-line">
+            <span data-i18n="trust.ads">Niente pubblicità</span>
+            <i aria-hidden="true"></i>
+            <span data-i18n="trust.tracking">Niente tracciamento</span>
+            <i aria-hidden="true"></i>
+            <span data-i18n="trust.delete">Elimini account e dati quando vuoi</span>
+          </p>
         </div>
-        <p class="trust-line">Niente pubblicità <span class="dot"></span> niente tracciamento <span class="dot"></span> elimini account e dati quando vuoi</p>
-      </div>
 
-      <div class="hero-visual reveal">
-        <!-- Screenshot: Genera pianificazione -->
-        <div class="shot"><img src="img/pianificazione.jpg" alt="Schermata «Pianifica la settimana» di Madia: conteggi dei gruppi alimentari, riga «Settimana ben equilibrata» e griglia dei pranzi e delle cene dal lunedì al sabato." width="1170" height="2532"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= MOTORE: LE TRE GENERAZIONI ================= -->
-  <section class="engine-band tight" id="motore">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow">Come funziona Madia</span>
-        <h2>Tre tocchi, e la settimana è risolta.</h2>
-        <p class="lede">Un flusso in tre passaggi, in quest'ordine: il piano nasce dai tuoi gusti, la lista nasce dal piano, e le proposte partono da ciò che hai già in casa. Ogni passaggio resta modificabile — l'automatismo propone, tu decidi.</p>
-      </div>
-      <div class="engine-grid">
-        <div class="engine-card reveal">
-          <span class="step-n"><b>1</b> Pianificazione</span>
-          <h3>Il piano si genera da sé</h3>
-          <p>Scegli quanti pranzi e quante cene ti servono. Madia costruisce la settimana intorno a quello che hai già in dispensa, mettendo davanti le ricette che consumano gli ingredienti più vicini alla scadenza. Rispetta dieta, allergie, cibi da evitare e profilo alimentare, e capisce indicazioni scritte a mano libera come "max 30 minuti" o "niente latticini a cena". Blocchi i pasti che ti piacciono e rigeneri solo gli altri.</p>
-          <div class="out">
-            <span class="yield" aria-hidden="true">→</span>
-            <span><span class="what">La settimana di pranzi e cene</span><span class="how">Trascinabile, modificabile, rigenerabile slot per slot</span></span>
+        <div class="hero__visual reveal">
+          <div class="hero__sun"></div>
+          <div class="hero__devices">
+            <figure class="device-shot device-shot--weekly">
+              <img
+                src="img/pianificazione.jpg"
+                width="1170"
+                height="2532"
+                alt="Piano settimanale dei pasti in Madia"
+                data-i18n-alt="images.weeklyPlanAlt"
+                decoding="async"
+                fetchpriority="high"
+              >
+            </figure>
+            <figure class="device-shot device-shot--shopping">
+              <img
+                src="img/spesa.jpg"
+                width="1170"
+                height="2532"
+                alt="Modalità spesa con prodotti da spuntare in Madia"
+                data-i18n-alt="images.shoppingModeAlt"
+                decoding="async"
+              >
+            </figure>
           </div>
         </div>
-        <div class="engine-card reveal">
-          <span class="step-n"><b>2</b> Lista della spesa</span>
-          <h3>La lista nasce dalla pianificazione</h3>
-          <p>Partendo dalla pianificazione dei pasti, Madia controlla cosa hai già in dispensa e aggiunge alla lista solo gli ingredienti mancanti, ordinati per reparto. Ogni voce resta collegata alla ricetta per cui serve.</p>
-          <div class="out">
-            <span class="yield" aria-hidden="true">→</span>
-            <span><span class="what">Una lista pronta per il supermercato</span><span class="how">Ogni riga sa da quale ricetta arriva</span></span>
+      </section>
+
+      <section class="bridge" aria-labelledby="engine-title">
+        <div class="bridge__diagram reveal" aria-hidden="true">
+          <div class="bridge__node bridge__node--plan">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v3"></path><path d="M16 2v3"></path><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M3 9h18"></path><path d="M8 13h.01"></path><path d="M12 13h.01"></path><path d="M16 13h.01"></path><path d="M8 17h.01"></path><path d="M12 17h.01"></path><path d="M16 17h.01"></path></svg>
+          </div>
+          <div class="bridge__node bridge__node--shop">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m2.05 2.05 1.099-.028a1 1 0 0 1 1.008.815l2.69 14.347A1 1 0 0 0 7.83 18H18"></path><path d="M4.563 5h16.435a1 1 0 0 1 .981 1.204l-1.026 6.226A2 2 0 0 1 18.962 14H6.25"></path><circle cx="18" cy="20" r="2"></circle><circle cx="8" cy="20" r="2"></circle></svg>
+          </div>
+          <div class="bridge__node bridge__node--pantry">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="5" x="2" y="3" rx="1"></rect><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"></path><path d="M10 12h4"></path></svg>
+          </div>
+          <span class="bridge__path"></span>
+          <span class="bridge__path bridge__path--b"></span>
+        </div>
+        <div class="bridge__copy reveal">
+          <p class="eyebrow eyebrow--light" data-i18n="engine.eyebrow">
+            Come funziona Madia
+          </p>
+          <h2 id="engine-title" data-i18n="engine.title">
+            Tre tocchi, e la settimana è risolta.
+          </h2>
+          <p data-i18n="engine.body">
+            Il piano nasce dai tuoi gusti, la lista nasce dal piano e le
+            proposte partono da ciò che hai già in casa. L'automatismo propone,
+            tu decidi.
+          </p>
+        </div>
+      </section>
+
+      <section class="flow" id="flow" aria-labelledby="flow-title">
+        <header class="flow__header reveal">
+          <div>
+            <p class="eyebrow" data-i18n="flow.eyebrow">Il motore</p>
+            <h2 id="flow-title" data-i18n="flow.title">
+              Piano, lista, svuotamento.
+            </h2>
+          </div>
+          <p data-i18n="flow.body">
+            Ogni passaggio prepara il successivo, resta modificabile e non ti
+            chiede di reinserire le stesse informazioni.
+          </p>
+        </header>
+
+        <article class="flow-step">
+          <div class="flow-step__copy reveal">
+            <p class="flow-step__number" data-i18n="flow.step1Label">
+              01 / Pianificazione
+            </p>
+            <h3 data-i18n="flow.step1Title">Il piano si genera da sé.</h3>
+            <p data-i18n="flow.step1Body">
+              Scegli quanti pranzi e quante cene ti servono. Madia costruisce
+              la settimana intorno a quello che hai già, dando priorità agli
+              ingredienti più vicini alla scadenza.
+            </p>
+            <ul class="flow-step__details">
+              <li data-i18n="flow.step1Detail1">
+                Rispetta dieta, allergie, cibi da evitare e profilo alimentare.
+              </li>
+              <li data-i18n="flow.step1Detail2">
+                Capisce indicazioni libere come “max 30 minuti” o “niente
+                latticini a cena”.
+              </li>
+              <li data-i18n="flow.step1Detail3">
+                Blocchi i pasti che ti piacciono e rigeneri soltanto gli altri.
+              </li>
+            </ul>
+            <p class="flow-step__outcome" data-i18n="flow.step1Outcome">
+              Risultato: una settimana modificabile, pasto per pasto.
+            </p>
+          </div>
+
+          <div class="product-stage product-stage--plan reveal">
+            <div class="screen-pair">
+              <figure class="device-shot device-shot--generator">
+                <img
+                  src="img/generazione.jpg"
+                  width="1170"
+                  height="2532"
+                  alt="Configurazione della pianificazione settimanale in Madia"
+                  data-i18n-alt="images.planGeneratorAlt"
+                  loading="lazy"
+                  decoding="async"
+                >
+              </figure>
+              <figure class="device-shot device-shot--preferences">
+                <img
+                  src="img/preferenze.jpg"
+                  width="1170"
+                  height="2532"
+                  alt="Preferenze alimentari usate per generare il piano in Madia"
+                  data-i18n-alt="images.planPreferencesAlt"
+                  loading="lazy"
+                  decoding="async"
+                >
+              </figure>
+            </div>
+          </div>
+        </article>
+
+        <article class="flow-step flow-step--shop">
+          <div class="flow-step__copy reveal">
+            <p class="flow-step__number" data-i18n="flow.step2Label">
+              02 / Lista della spesa
+            </p>
+            <h3 data-i18n="flow.step2Title">La lista nasce dalla pianificazione.</h3>
+            <p data-i18n="flow.step2Body">
+              Partendo dalla pianificazione dei pasti, Madia controlla cosa hai
+              già in dispensa e aggiunge alla lista solo gli ingredienti
+              mancanti, ordinati per reparto. Ogni voce resta collegata alla
+              ricetta per cui serve.
+            </p>
+            <ul class="flow-step__details">
+              <li data-i18n="flow.step2Detail1">
+                Se cambi un pasto, Madia mostra prima cosa aggiungere e togliere.
+              </li>
+              <li data-i18n="flow.step2Detail2">
+                La lista attiva si aggiorna solo dopo la tua conferma.
+              </li>
+            </ul>
+            <p class="flow-step__outcome" data-i18n="flow.step2Outcome">
+              Risultato: una lista pronta per il supermercato.
+            </p>
+          </div>
+
+          <div class="product-stage product-stage--shop reveal">
+            <figure class="device-shot device-shot--flow">
+              <img
+                src="img/spesa.jpg"
+                width="1170"
+                height="2532"
+                alt="Lista della spesa attiva organizzata per reparto in Madia"
+                data-i18n-alt="images.shoppingFlowAlt"
+                loading="lazy"
+                decoding="async"
+              >
+            </figure>
+          </div>
+        </article>
+
+        <article class="flow-step">
+          <div class="flow-step__copy reveal">
+            <p class="flow-step__number" data-i18n="flow.step3Label">
+              03 / Svuotamento
+            </p>
+            <h3 data-i18n="flow.step3Title">
+              Cucini, e la dispensa si scarica.
+            </h3>
+            <p data-i18n="flow.step3Body">
+              Seguendo il piano, Madia sa già cosa era previsto e prepara gli
+              ingredienti e le quantità da togliere, ricetta per ricetta.
+              Confermi o correggi con un tocco.
+            </p>
+            <ul class="flow-step__details">
+              <li data-i18n="flow.step3Detail1">
+                Un promemoria serale evita che il passaggio venga dimenticato.
+              </li>
+              <li data-i18n="flow.step3Detail2">
+                Le scorte restano affidabili senza rifare inventari.
+              </li>
+            </ul>
+            <p class="flow-step__outcome" data-i18n="flow.step3Outcome">
+              Risultato: meno spreco, meno spesa, dispensa aggiornata.
+            </p>
+          </div>
+
+          <div class="product-stage product-stage--deduction reveal">
+            <div class="deduction-flow" aria-hidden="true">
+              <div class="deduction-flow__node">
+                <span>01</span>
+                <b data-i18n="deduction.meal">Pasto cucinato</b>
+              </div>
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"></path><path d="m19 12-7 7-7-7"></path></svg>
+              <div class="deduction-flow__node deduction-flow__node--accent">
+                <span>02</span>
+                <b data-i18n="deduction.review">Proposta da confermare</b>
+              </div>
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"></path><path d="m19 12-7 7-7-7"></path></svg>
+              <div class="deduction-flow__node">
+                <span>03</span>
+                <b data-i18n="deduction.stock">Dispensa aggiornata</b>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <aside class="decision-callout reveal">
+          <p class="eyebrow" data-i18n="decision.eyebrow">Il tempo ritrovato</p>
+          <h3 data-i18n="decision.title">
+            Il risparmio vero è smettere di decidere tutto ogni sera.
+          </h3>
+          <p data-i18n="decision.body">
+            Cosa si mangia? Cosa manca? Ho già cucinato carne tre volte? Madia
+            risponde una volta per tutta la settimana, bilanciando gusti,
+            dieta e quello che hai in casa. Puoi seguirla o cambiare ciò che
+            vuoi.
+          </p>
+        </aside>
+      </section>
+
+      <section class="balance" id="balance" aria-labelledby="balance-title">
+        <div class="balance__copy reveal">
+          <p class="eyebrow" data-i18n="balance.eyebrow">
+            Equilibrio e personalizzazione
+          </p>
+          <h2 id="balance-title" data-i18n="balance.title">
+            Automatica non vuol dire uguale per tutti.
+          </h2>
+          <p class="section-lead" data-i18n="balance.body">
+            L'automatismo lavora dentro due paletti: come dovresti mangiare e
+            come ti piace mangiare. Il primo lo tiene Madia, il secondo lo
+            imposti una volta e vale per sempre.
+          </p>
+          <ul class="proof-list">
+            <li>
+              <b data-i18n="balance.item1Title">Profilo settimanale</b>
+              <span data-i18n="balance.item1Body">
+                Equilibrata, Vegetariana o Proteica. Il profilo equilibrato
+                richiede almeno 3 legumi e 2 pesci e limita uova, carne, salumi
+                e formaggi.
+              </span>
+            </li>
+            <li>
+              <b data-i18n="balance.item2Title">Controllo prima della lista</b>
+              <span data-i18n="balance.item2Body">
+                I conteggi dei gruppi alimentari mostrano come è bilanciata la
+                settimana.
+              </span>
+            </li>
+            <li>
+              <b data-i18n="balance.item3Title">Dieta e gusti distinti</b>
+              <span data-i18n="balance.item3Body">
+                La dieta è un filtro rigido; cibi e cucine preferite ordinano
+                le proposte.
+              </span>
+            </li>
+            <li>
+              <b data-i18n="balance.item4Title">Sbilancia quando serve</b>
+              <span data-i18n="balance.item4Body">
+                Dai più peso a proteine, carboidrati o grassi per una settimana
+                diversa dal solito.
+              </span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="balance__visual reveal">
+          <div class="balance__shape"></div>
+          <figure class="device-shot device-shot--balance">
+            <img
+              src="img/preferenze.jpg"
+              width="1170"
+              height="2532"
+              alt="Preferenze alimentari usate per generare il piano in Madia"
+              data-i18n-alt="images.planPreferencesAlt"
+              loading="lazy"
+              decoding="async"
+            >
+          </figure>
+          <p class="image-caption" data-i18n="balance.caption">
+            Macro, priorità alle scadenze e dieta nello stesso foglio.
+          </p>
+        </div>
+      </section>
+
+      <section class="loop" aria-labelledby="loop-title">
+        <header class="loop__header reveal">
+          <p class="eyebrow eyebrow--light" data-i18n="loop.eyebrow">
+            Dopo i tre tocchi
+          </p>
+          <h2 id="loop-title" data-i18n="loop.title">
+            E il resto si tiene aggiornato da solo.
+          </h2>
+          <p data-i18n="loop.body">
+            La spesa confermata diventa dispensa, la dispensa orienta le
+            proposte, il pasto cucinato aggiorna le scorte. Non reinserisci
+            nulla: al massimo confermi.
+          </p>
+        </header>
+
+        <div class="loop__track">
+          <article class="loop__step reveal">
+            <span>01</span>
+            <p class="loop__role" data-i18n="loop.step1Role">Cosa comprare</p>
+            <h3 data-i18n="loop.step1Title">Lista della spesa</h3>
+            <p data-i18n="loop.step1Body">
+              Gli acquisti confermati entrano in dispensa con la scadenza
+              stimata. Le liste si archiviano, duplicano e condividono.
+            </p>
+          </article>
+          <article class="loop__step reveal">
+            <span>02</span>
+            <p class="loop__role" data-i18n="loop.step2Role">Cosa hai in casa</p>
+            <h3 data-i18n="loop.step2Title">Dispensa</h3>
+            <p data-i18n="loop.step2Body">
+              Quantità, lotti e scadenze in frigo, freezer e credenza guidano
+              piano, lista e proposte di consumo.
+            </p>
+          </article>
+          <article class="loop__step reveal">
+            <span>03</span>
+            <p class="loop__role" data-i18n="loop.step3Role">Cosa cucinare</p>
+            <h3 data-i18n="loop.step3Title">Ricette e pasti</h3>
+            <p data-i18n="loop.step3Body">
+              Confermi cosa hai mangiato, la dispensa si scarica e ciò che è
+              finito può tornare in lista.
+            </p>
+          </article>
+        </div>
+
+        <div class="learning-ledger reveal">
+          <p class="eyebrow eyebrow--light" data-i18n="learning.eyebrow">
+            E migliora con l'uso
+          </p>
+          <div class="learning-row">
+            <h3 data-i18n="learning.item1Title">Scopre le tue ricorrenze</h3>
+            <p data-i18n="learning.item1Body">
+              Dai riacquisti capisce quando finiscono caffè, detersivo o carta
+              igienica e li ripropone al momento giusto.
+            </p>
+          </div>
+          <div class="learning-row">
+            <h3 data-i18n="learning.item2Title">Affina le scadenze</h3>
+            <p data-i18n="learning.item2Body">
+              Ogni data corretta migliora la durata proposta la volta
+              successiva.
+            </p>
+          </div>
+          <div class="learning-row">
+            <h3 data-i18n="learning.item3Title">Impara quanto spendi</h3>
+            <p data-i18n="learning.item3Body">
+              I prezzi letti dagli scontrini rendono più utili la stima della
+              lista e i report mensili.
+            </p>
           </div>
         </div>
-        <div class="engine-card reveal">
-          <span class="step-n"><b>3</b> Svuotamento</span>
-          <h3>Cucini, e la dispensa si scarica</h3>
-          <p>È il passaggio che tiene in ordine tutto il resto, e non chiede quasi niente: seguendo il piano, Madia sa già cosa era previsto e ti propone lo scarico compilato — quali ingredienti togliere e quante unità, ricetta per ricetta. Confermi con un tocco, o correggi quello che non torna; la sera un promemoria te lo ricorda. Così le scorte restano veritiere senza rifare inventari, e i prodotti in scadenza trovano un pasto prima del bidone: meno spreco, meno spesa.</p>
-          <div class="out">
-            <span class="yield" aria-hidden="true">→</span>
-            <span><span class="what">Una dispensa sempre aggiornata</span><span class="how">Un tocco a fine giornata, non un inventario</span></span>
+
+        <p class="loop__closing reveal" data-i18n="loop.closing">
+          Ti restano due gesti: confermare la spesa e i pasti cucinati. Tutto il
+          resto lo tiene aggiornato Madia.
+        </p>
+      </section>
+
+      <section class="everyday" id="everyday" aria-labelledby="everyday-title">
+        <header class="everyday__header reveal">
+          <p class="eyebrow" data-i18n="everyday.eyebrow">Ogni giorno</p>
+          <h2 id="everyday-title" data-i18n="everyday.title">
+            Anche i passaggi in mezzo sono già semplificati.
+          </h2>
+          <p data-i18n="everyday.body">
+            Tra il piano e il piatto ci sono la spesa, le ricorrenze, la
+            ricetta da seguire e ciò che sta per scadere. Madia accompagna ogni
+            momento.
+          </p>
+        </header>
+
+        <article class="daily-moment daily-moment--store">
+          <div class="daily-moment__copy reveal">
+            <p class="flow-step__number" data-i18n="store.eyebrow">In negozio</p>
+            <h3 data-i18n="store.title">Ti accompagna corsia per corsia.</h3>
+            <p data-i18n="store.body">
+              La lista generata dal piano arriva già divisa per i reparti del
+              punto vendita. Scegli catena e negozio, e i più usati di recente
+              vengono prima.
+            </p>
+            <ul class="proof-list proof-list--compact">
+              <li><b data-i18n="store.item1Title">Modalità spesa</b><span data-i18n="store.item1Body">Un reparto alla volta, con articoli presi e rimanenti.</span></li>
+              <li><b data-i18n="store.item2Title">Indicatore dei freschi</b><span data-i18n="store.item2Body">Segnala quando il carrello contiene molti prodotti a breve scadenza.</span></li>
+              <li><b data-i18n="store.item3Title">Checkout in un tocco</b><span data-i18n="store.item3Body">La lista spuntata diventa scorte con scadenze proposte.</span></li>
+              <li><b data-i18n="store.item4Title">Lista condivisa</b><span data-i18n="store.item4Body">Resta allineata con chi fa la spesa con te.</span></li>
+            </ul>
           </div>
-        </div>
-      </div>
-      <figure class="shotfig engine-shot reveal">
-          <div class="shot"><img src="img/generazione.jpg" alt="Schermata «Genera pianificazione» di Madia: quanti pasti per pranzo e cena, profilo settimanale Equilibrata con le sue soglie e campo per le indicazioni libere." width="1170" height="2532" loading="lazy" decoding="async"></div>
-          <figcaption class="shot-cap">Il foglio da cui parte tutto: quanti pasti, con quale profilo settimanale — e le indicazioni scritte a mano libera.</figcaption>
-        </figure>
-      <p class="pull reveal">Il tempo che risparmi non è tanto quello al supermercato: è quello che passavi a decidere cosa cucinare. <span>Cosa si mangia stasera? Cosa manca? Ho già fatto la carne tre volte questa settimana? Madia risponde una volta per tutte, e la settimana che propone è già bilanciata sui tuoi gusti, sulla tua dieta e su quello che hai in casa: puoi seguirla a occhi chiusi, o cambiare quello che vuoi.</span></p>
-    </div>
-  </section>
+          <div class="daily-moment__visual product-stage product-stage--shop reveal">
+            <figure class="device-shot device-shot--daily">
+              <img
+                src="img/spesa.jpg"
+                width="1170"
+                height="2532"
+                alt="Lista della spesa attiva organizzata per reparto in Madia"
+                data-i18n-alt="images.shoppingFlowAlt"
+                loading="lazy"
+                decoding="async"
+              >
+            </figure>
+          </div>
+        </article>
 
-  <!-- ================= EQUILIBRIO E GUSTI ================= -->
-  <section id="equilibrio">
-    <div class="wrap">
-      <div class="pillar" style="padding-top: 0;">
-        <div class="reveal">
-          <span class="pillar-kicker">Equilibrio e personalizzazione</span>
-          <h2>Automatica non vuol dire uguale per tutti.</h2>
-          <p class="lede">L'automatismo lavora dentro due paletti: come dovresti mangiare e come ti piace mangiare. Il primo lo tiene Madia, il secondo lo imposti tu una volta e vale per sempre.</p>
-          <ul class="feature-list">
-            <li><span class="tick">✓</span><span><b>Profilo settimanale</b> — Equilibrata, Vegetariana o Proteica: soglie vere, non slogan. La settimana equilibrata chiede almeno 3 legumi e 2 pesci, e non supera 4 uova, 3 carni, 1 salume e 3 formaggi.</span></li>
-            <li><span class="tick">✓</span><span><b>Soglie visibili mentre pianifichi</b>: i conteggi dei gruppi alimentari restano in cima alla settimana, e la riga dell'equilibrio ti dice com'è bilanciata prima che generi la lista.</span></li>
-            <li><span class="tick">✓</span><span><b>Dieta, cibi non graditi, cucine preferite</b>: la dieta è un filtro duro, i gusti pesano sull'ordine delle proposte.</span></li>
-            <li><span class="tick">✓</span><span><b>Sbilancia quando serve</b>: più proteine, più carboidrati o più grassi — per una settimana di allenamenti o una più leggera.</span></li>
-          </ul>
-        </div>
-        <div class="pillar-visual reveal">
-          <figure class="shotfig">
-          <div class="shot"><img src="img/preferenze.jpg" alt="Seconda parte del foglio di generazione di Madia: bilanciamento macro, due interruttori di priorità e dieta." width="1170" height="2532" loading="lazy" decoding="async"></div>
-          <figcaption class="shot-cap">I paletti della generazione: bilanciamento macro, priorità a ciò che scade e dieta.</figcaption>
-        </figure>
-        </div>
-      </div>
-    </div>
-  </section>
+        <article class="daily-moment daily-moment--cooking">
+          <div class="daily-moment__copy reveal">
+            <p class="flow-step__number" data-i18n="cooking.eyebrow">Ai fornelli</p>
+            <h3 data-i18n="cooking.title">Segui la ricetta senza toccare niente.</h3>
+            <p data-i18n="cooking.body">
+              La modalità cottura tiene lo schermo acceso, divide la
+              preparazione in passaggi singoli e legge quello che devi fare.
+              Il timer continua anche mentre guardi gli ingredienti.
+            </p>
+            <ul class="proof-list proof-list--compact">
+              <li><b data-i18n="cooking.item1Title">Un passaggio alla volta</b><span data-i18n="cooking.item1Body">Grande, leggibile e facile da scorrere avanti e indietro.</span></li>
+              <li><b data-i18n="cooking.item2Title">Timer integrato</b><span data-i18n="cooking.item2Body">Resta visibile sui passaggi a tempo.</span></li>
+              <li><b data-i18n="cooking.item3Title">Lettura ad alta voce</b><span data-i18n="cooking.item3Body">Legge il passaggio corrente mentre cucini.</span></li>
+              <li><b data-i18n="cooking.item4Title">Porzioni adattate</b><span data-i18n="cooking.item4Body">Le quantità cambiano in base alle persone per cui cucini.</span></li>
+            </ul>
+          </div>
+          <div class="daily-moment__visual product-stage product-stage--cooking reveal">
+            <figure class="device-shot device-shot--daily">
+              <img
+                src="img/cottura.jpg"
+                width="1170"
+                height="2532"
+                alt="Ricetta guidata con timer e lettura ad alta voce in Madia"
+                data-i18n-alt="images.guidedCookingAlt"
+                loading="lazy"
+                decoding="async"
+              >
+            </figure>
+          </div>
+        </article>
 
-  <!-- ================= LOOP ================= -->
-  <section class="loop-band tight" id="loop">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow">Dopo i tre tocchi</span>
-        <h2>E il resto si tiene aggiornato da solo.</h2>
-        <p class="lede">Finché resti dentro il flusso, l'automatismo è quasi totale: ogni passaggio scrive il successivo. La spesa confermata diventa dispensa, la dispensa decide le proposte, il pasto cucinato torna in lista. Non c'è nulla da reinserire a mano — al massimo da confermare.</p>
-      </div>
-      <div class="loop-grid">
-        <div class="loop-card reveal">
-          <div class="loop-step">🛒</div>
-          <span class="role">Cosa comprare</span>
-          <h3>Lista della spesa</h3>
-          <p>Confermi cosa hai preso e ogni acquisto entra da solo in dispensa, con la scadenza già stimata. Le liste si archiviano, si duplicano e si condividono con chi fa la spesa con te.</p>
-        </div>
-        <div class="loop-card reveal">
-          <div class="loop-step">🥫</div>
-          <span class="role">Cosa hai in casa</span>
-          <h3>Dispensa</h3>
-          <p>La memoria di casa: quantità, lotti e scadenze in frigo, freezer e credenza. È la base su cui si costruiscono piano, lista e proposte di svuotamento.</p>
-        </div>
-        <div class="loop-card reveal">
-          <div class="loop-step">🍳</div>
-          <span class="role">Cosa cucinare</span>
-          <h3>Ricette e pasti</h3>
-          <p>A fine giornata confermi cosa hai mangiato: la dispensa si scarica con proposte che puoi correggere, e ciò che è finito torna in lista.</p>
-        </div>
-      </div>
-      <div class="learn reveal">
-        <span class="learn-label">E migliora con l'uso</span>
-        <div class="learn-items">
-          <p><b>Scopre le tue ricorrenze</b>Dai riacquisti capisce ogni quanto finiscono caffè, detersivo o carta igienica, e te li ripropone in lista quando è il momento — senza che tu abbia impostato niente.</p>
-          <p><b>Affina le scadenze</b>Ogni volta che correggi una data, la durata media di quel prodotto si aggiorna: la proposta successiva somiglia di più a quello che succede davvero nel tuo frigo.</p>
-          <p><b>Impara quanto spendi</b>Dagli scontrini registra il prezzo dei prodotti che compri, così la lista mostra una stima di spesa e i report mensili diventano più precisi.</p>
-        </div>
-      </div>
-      <p class="loop-again reveal"><b>Ti restano due gesti:</b> confermare la spesa che hai preso e i pasti che hai cucinato. Tutto il resto lo tiene aggiornato Madia. ↻</p>
-    </div>
-  </section>
+        <article class="daily-moment daily-moment--receipt">
+          <div class="daily-moment__copy reveal">
+            <p class="flow-step__number" data-i18n="receipt.eyebrow">La scorciatoia</p>
+            <h3 data-i18n="receipt.title">Non hai pianificato? Scansiona lo scontrino.</h3>
+            <p data-i18n="receipt.body">
+              Fotografalo: Madia riconosce prodotti, quantità e prezzi, li
+              abbina al catalogo e propone le scadenze. Tu controlli e
+              confermi, così anche una spesa veloce tiene la dispensa affidabile.
+            </p>
+            <ul class="proof-list proof-list--compact">
+              <li><b data-i18n="receipt.item1Title">Nessuna lista richiesta</b><span data-i18n="receipt.item1Body">Vale anche per acquisti imprevisti o aggiunti al carrello.</span></li>
+              <li><b data-i18n="receipt.item2Title">Riconoscimento AI</b><span data-i18n="receipt.item2Body">Legge righe, quantità e prezzi anche se abbreviati.</span></li>
+              <li><b data-i18n="receipt.item3Title">Scadenze rapide</b><span data-i18n="receipt.item3Body">Scorciatoie da 3, 7, 14 o 30 giorni per confermare.</span></li>
+              <li><b data-i18n="receipt.item4Title">Stime che migliorano</b><span data-i18n="receipt.item4Body">Ogni correzione rende più precisa la proposta successiva.</span></li>
+              <li><b data-i18n="receipt.item5Title">Movimenti e report</b><span data-i18n="receipt.item5Body">Prezzi, spesa e sprechi restano nello storico, compresa la stima in euro del cibo buttato.</span></li>
+            </ul>
+          </div>
+          <div class="daily-moment__visual product-stage product-stage--receipt reveal">
+            <figure class="device-shot device-shot--daily">
+              <img
+                src="img/scontrino.jpg"
+                width="1170"
+                height="2532"
+                alt="Acquisizione dello scontrino per caricare la spesa in Madia"
+                data-i18n-alt="images.receiptScanAlt"
+                loading="lazy"
+                decoding="async"
+              >
+            </figure>
+          </div>
+        </article>
 
-  <!-- ================= QUOTIDIANO ================= -->
-  <section id="quotidiano">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow">Ogni giorno</span>
-        <h2>Anche i passaggi in mezzo sono già semplificati.</h2>
-        <p class="lede">Tra il piano e il piatto c'è tutto il resto: fare la spesa, ricordarsi il caffè, seguire la ricetta con le mani sporche, non buttare niente. Madia ti accompagna in ognuno di questi momenti.</p>
-      </div>
+        <div class="daily-extras">
+          <article class="daily-extra reveal">
+            <span>01</span>
+            <h3 data-i18n="extras.item1Title">Acquisti ricorrenti proposti</h3>
+            <p data-i18n="extras.item1Body">
+              Madia impara ogni quanto ricompri caffè, sapone o detersivo e li
+              ripropone solo quando in casa non resta più niente. Puoi rinviare
+              o saltare con un tocco.
+            </p>
+          </article>
+          <article class="daily-extra reveal">
+            <span>02</span>
+            <h3 data-i18n="extras.item2Title">Avviso prima che scada</h3>
+            <p data-i18n="extras.item2Body">
+              Dalla notifica arrivi al prodotto e scegli se consumarlo,
+              congelarlo, buttarlo o rimetterlo in lista, anche solo in parte.
+              Decidi tu quali avvisi ricevere.
+            </p>
+          </article>
+          <article class="daily-extra reveal">
+            <span>03</span>
+            <h3 data-i18n="extras.item3Title">Prima ciò che scade, poi la stagione</h3>
+            <p data-i18n="extras.item3Body">
+              Dispensa, ricette e lista danno priorità a ciò che va usato
+              subito e distinguono i prodotti di stagione.
+            </p>
+          </article>
+        </div>
+      </section>
 
-      <!-- Spesa corsia per corsia -->
-      <div class="pillar" style="padding-top: 8px;">
-        <div class="reveal">
-          <span class="pillar-kicker">In negozio</span>
-          <h2>Ti accompagna corsia per corsia.</h2>
-          <p class="lede">La lista generata dal piano arriva al supermercato già divisa per i reparti di quel punto vendita: scegli la catena e poi il negozio — i più usati di recente vengono prima — e non torni indietro tre volte per l'aceto.</p>
-          <ul class="feature-list">
-            <li><span class="tick">✓</span><span><b>Modalità spesa</b>: un reparto alla volta, con quanti articoli hai già preso e quanti restano.</span></li>
-            <li><span class="tick">✓</span><span><b>Indicatore dei freschi</b>: ti avvisa se stai caricando troppi prodotti a breve scadenza.</span></li>
-            <li><span class="tick">✓</span><span><b>Checkout in un tocco</b>: la lista spuntata diventa scorte con le scadenze già proposte.</span></li>
-            <li><span class="tick">✓</span><span><b>Lista condivisa</b>: la mandi a chi passa al supermercato e resta allineata per entrambi.</span></li>
-          </ul>
-        </div>
-        <div class="pillar-visual reveal">
-          <figure class="shotfig">
-          <div class="shot"><img src="img/spesa.jpg" alt="Modalità spesa di Madia nel reparto Frutta e verdura, con due articoli già spuntati e il pulsante Conferma." width="1170" height="2532" loading="lazy" decoding="async"></div>
-          <figcaption class="shot-cap">Modalità spesa: la lista del piano, divisa per i reparti del punto vendita.</figcaption>
-        </figure>
-        </div>
-      </div>
+      <section class="features" aria-labelledby="features-title">
+        <header class="features__header reveal">
+          <p class="eyebrow" data-i18n="features.eyebrow">Tutto il resto</p>
+          <h2 id="features-title" data-i18n="features.title">
+            Le cose che scopri strada facendo.
+          </h2>
+        </header>
+        <ol class="feature-list">
+          <li class="feature-row reveal">
+            <span>01</span>
+            <h3 data-i18n="features.item1Title">Pasti di oggi, in home</h3>
+            <p data-i18n="features.item1Body">Il piano del giorno è già in prima pagina e puoi confermare cosa hai davvero mangiato. Se è vuoto, chiedi un suggerimento.</p>
+          </li>
+          <li class="feature-row reveal">
+            <span>02</span>
+            <h3 data-i18n="features.item2Title">Importa ricette da link</h3>
+            <p data-i18n="features.item2Body">Incolli un URL: Madia normalizza ingredienti, ordina i passaggi e collega la ricetta al catalogo.</p>
+          </li>
+          <li class="feature-row reveal">
+            <span>03</span>
+            <h3 data-i18n="features.item3Title">Disponibilità ingredienti</h3>
+            <p data-i18n="features.item3Body">Ogni ricetta si confronta con la dispensa, riconosce prodotti simili e aggiunge in lista soltanto ciò che manca.</p>
+          </li>
+          <li class="feature-row reveal">
+            <span>04</span>
+            <h3 data-i18n="features.item4Title">Liste condivise</h3>
+            <p data-i18n="features.item4Body">Collabori sulla stessa spesa e ricevi conferma quando la lista viene ricevuta e salvata.</p>
+          </li>
+          <li class="feature-row reveal">
+            <span>05</span>
+            <h3 data-i18n="features.item5Title">Gestione parziale dei lotti</h3>
+            <p data-i18n="features.item5Body">Consuma due yogurt, congela gli altri prolungandone la scadenza o segnala solo una parte come buttata. Il riacquisto parte quando non resta nulla.</p>
+          </li>
+          <li class="feature-row reveal">
+            <span>06</span>
+            <h3 data-i18n="features.item6Title">Sei temi, chiaro e scuro</h3>
+            <p data-i18n="features.item6Body">Verde, crema e terracotta, taupe, blu, prugna o bianco e nero, ciascuno in chiaro e scuro. Le novità di versione sono nelle Impostazioni.</p>
+          </li>
+        </ol>
+      </section>
 
-      <!-- Modalità cucina -->
-      <div class="pillar">
-        <div class="pillar-visual reveal">
-          <figure class="shotfig">
-          <div class="shot"><img src="img/cottura.jpg" alt="Modalità cottura di Madia al passaggio 5 di 8, con i pulsanti «Avvia timer · 10:00» e «Leggi»." width="1170" height="2532" loading="lazy" decoding="async"></div>
-          <figcaption class="shot-cap">Modalità cottura: un passaggio per volta, timer da avviare e lettura ad alta voce.</figcaption>
-        </figure>
-        </div>
-        <div class="reveal">
-          <span class="pillar-kicker">Ai fornelli</span>
-          <h2>Segui la ricetta senza toccare niente.</h2>
-          <p class="lede">La modalità cottura tiene lo schermo acceso, spezza la preparazione in passaggi singoli e ti legge quello che devi fare. Il timer di ogni passo continua a scorrere anche mentre guardi gli ingredienti.</p>
-          <ul class="feature-list">
-            <li><span class="tick">✓</span><span><b>Un passaggio alla volta</b>, grande e leggibile, con avanti e indietro.</span></li>
-            <li><span class="tick">✓</span><span><b>Timer integrato</b> sui passaggi a tempo, con barra sempre visibile.</span></li>
-            <li><span class="tick">✓</span><span><b>Lettura ad alta voce</b> del passaggio in corso.</span></li>
-            <li><span class="tick">✓</span><span><b>Quantità sulle porzioni che scegli</b>: se cucini per quattro, gli ingredienti si adattano.</span></li>
-          </ul>
-        </div>
-      </div>
+      <section class="ai-band" id="ai" aria-labelledby="ai-title">
+        <header class="ai-band__header reveal">
+          <p class="eyebrow eyebrow--on-color" data-i18n="ai.eyebrow">
+            L'AI in cucina
+          </p>
+          <h2 id="ai-title" data-i18n="ai.title">
+            L'intelligenza che lavora per te, non al posto tuo.
+          </h2>
+          <p data-i18n="ai.body">
+            Madia usa l'AI nei punti in cui toglie fatica vera e ti lascia
+            sempre l'ultima parola prima che qualcosa entri nel piano, nella
+            lista o in dispensa.
+          </p>
+        </header>
+        <ol class="ai-ledger">
+          <li class="reveal"><span>01</span><div><h3 data-i18n="ai.item1Title">Genera il piano settimanale</h3><p data-i18n="ai.item1Body">Interpreta indicazioni libere e rispetta dieta, allergie, gusti e soglie dei gruppi alimentari.</p></div></li>
+          <li class="reveal"><span>02</span><div><h3 data-i18n="ai.item2Title">Legge gli scontrini</h3><p data-i18n="ai.item2Body">Riconosce righe, quantità, prezzi e negozio, poi abbina ogni voce ai tuoi prodotti.</p></div></li>
+          <li class="reveal"><span>03</span><div><h3 data-i18n="ai.item3Title">Arricchisce ogni prodotto</h3><p data-i18n="ai.item3Body">Completa categoria, reparto, emoji, durata media, stagionalità e luogo di conservazione.</p></div></li>
+          <li class="reveal"><span>04</span><div><h3 data-i18n="ai.item4Title">Importa ricette dal web</h3><p data-i18n="ai.item4Body">Trasforma un link in ingredienti normalizzati, passaggi ordinati, nutrizione e stagionalità.</p></div></li>
+        </ol>
+      </section>
 
-      <div class="card-grid" style="margin-top: 26px;">
-        <div class="flat-card reveal">
-          <span class="flat-icon">🔁</span>
-          <h3>Acquisti ricorrenti proposti</h3>
-          <p>Caffè, sapone, carta igienica, detersivo: Madia impara ogni quanto li ricompri e te li ripropone in lista al momento giusto. Posticipi o salti con un tocco, e il riacquisto scatta solo quando in dispensa non è rimasto più niente.</p>
+      <section class="privacy" aria-labelledby="privacy-title">
+        <header class="privacy__header reveal">
+          <p class="eyebrow" data-i18n="privacy.eyebrow">I tuoi dati</p>
+          <h2 id="privacy-title" data-i18n="privacy.title">Casa tua, dati tuoi.</h2>
+        </header>
+        <div class="privacy__statements">
+          <article class="reveal"><span>01</span><h3 data-i18n="privacy.item1Title">Niente pubblicità</h3><p data-i18n="privacy.item1Body">Nessun banner o promozione. Madia è al servizio della tua cucina, non degli inserzionisti.</p></article>
+          <article class="reveal"><span>02</span><h3 data-i18n="privacy.item2Title">Niente tracciamento</h3><p data-i18n="privacy.item2Body">Quello che compri e mangi non crea profili pubblicitari e non viene condiviso con terzi.</p></article>
+          <article class="reveal"><span>03</span><h3 data-i18n="privacy.item3Title">Elimini tutto quando vuoi</h3><p data-i18n="privacy.item3Body">Account e dati si cancellano direttamente dall'app, senza email al supporto o attese.</p></article>
         </div>
-        <div class="flat-card reveal">
-          <span class="flat-icon">🔔</span>
-          <h3>Avviso prima che scada</h3>
-          <p>"In scadenza domani": tocchi la notifica e sei sul prodotto, con consumato, buttato, congela o rimetti in lista — anche solo per alcuni pezzi del lotto. Scegli tu quali notifiche ricevere.</p>
-        </div>
-        <div class="flat-card reveal">
-          <span class="flat-icon">🥬</span>
-          <h3>Prima ciò che scade, poi la stagione</h3>
-          <p>Dispensa, ricette e proposte mettono davanti quello che va consumato subito e quello che è di stagione adesso. Anche la lista distingue i prodotti di stagione da quelli fuori periodo.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+      </section>
 
-  <!-- ================= DISPENSA + SCONTRINO ================= -->
-  <section class="tight" style="padding-top: 10px;">
-    <div class="wrap">
-      <div class="pillar">
-        <div class="reveal">
-          <span class="pillar-kicker">La scorciatoia</span>
-          <h2>Non hai pianificato? <span class="accent-word">Scansiona lo scontrino</span>.</h2>
-          <p class="lede">La spesa veloce, quella fatta di corsa senza lista, non rompe niente: fotografi lo scontrino e l'AI riconosce prodotti, quantità e prezzi, li abbina al tuo catalogo e li mette in coda con le scadenze proposte. Tu controlli e confermi — e la dispensa torna veritiera, che è la condizione perché tutto il resto continui a funzionare.</p>
-          <ul class="feature-list">
-            <li><span class="tick">✓</span><span><b>Nessuna lista richiesta</b>: vale per la spesa non pianificata e per quello che hai preso in più rispetto alla lista.</span></li>
-            <li><span class="tick">✓</span><span><b>Riconoscimento AI</b> di righe, quantità e prezzi, anche con i nomi abbreviati da scontrino.</span></li>
-            <li><span class="tick">✓</span><span><b>Scorciatoie 3g / 7g / 14g / 30g</b> per confermare le scadenze in un tocco.</span></li>
-            <li><span class="tick">✓</span><span><b>Correggi una scadenza e Madia impara</b>: la prossima volta quel prodotto avrà una stima migliore.</span></li>
-            <li><span class="tick">✓</span><span><b>Storico dei movimenti</b> e report mensili di spesa e sprechi, con la stima in euro di quello che è finito nel bidone.</span></li>
-          </ul>
+      <section class="closing" id="launch" aria-labelledby="closing-title">
+        <div class="closing__copy reveal">
+          <p class="eyebrow eyebrow--light" data-i18n="closing.eyebrow">
+            Madia · Spesa e Dispensa
+          </p>
+          <h2 id="closing-title">
+            <span data-i18n="closing.titleLine1">Generi una volta.</span>
+            <strong data-i18n="closing.titleLine2">La settimana si fa da sé.</strong>
+          </h2>
+          <p data-i18n="closing.body">
+            Piano, lista e proposte per svuotare la dispensa. Madia risponde
+            alla domanda di ogni sera; a te resta la parte bella, cucinare.
+          </p>
+          <span class="launch-status" data-i18n="cta.soon">
+            Presto su App Store
+          </span>
+          <p class="launch-notes">
+            <span data-i18n="launch.free">Gratis al lancio</span>
+            <i aria-hidden="true"></i>
+            <span data-i18n="launch.italian">In italiano</span>
+            <i aria-hidden="true"></i>
+            <span data-i18n="launch.local">Pensata per la spesa in Italia</span>
+          </p>
         </div>
-        <div class="pillar-visual reveal">
-          <figure class="shotfig">
-          <div class="shot"><img src="img/scontrino.jpg" alt="Schermata «Da scontrino» di Madia: inquadratura della fotocamera su uno scontrino e pulsante «Scatta foto»." width="1170" height="2532" loading="lazy" decoding="async"></div>
-          <figcaption class="shot-cap">Dallo scontrino alla dispensa: i prodotti entrano in coda con le scadenze proposte.</figcaption>
-        </figure>
+        <div class="closing__mark" aria-hidden="true">
+          <span class="closing__mark-line closing__mark-line--a"></span>
+          <span class="closing__mark-line closing__mark-line--b"></span>
+          <span class="closing__mark-dot"></span>
         </div>
-      </div>
-    </div>
-  </section>
+      </section>
+    </main>
 
-  <!-- ================= TUTTO IL RESTO ================= -->
-  <section class="tight" id="avanzate" style="padding-top: 10px;">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow">Tutto il resto</span>
-        <h2>Le cose che scopri strada facendo.</h2>
+    <footer class="site-footer">
+      <a
+        class="wordmark wordmark--footer"
+        href="#top"
+        data-i18n-aria-label="nav.home"
+        aria-label="Torna all'inizio"
+      >madia<span>.</span></a>
+      <div class="site-footer__meta">
+        <p data-i18n="footer.line">
+          Pianifica, genera la lista, svuota la dispensa.
+        </p>
+        <nav
+          class="site-footer__legal"
+          aria-label="Pagine informative"
+          data-i18n-aria-label="footer.legalAria"
+        >
+          <a href="privacy/" data-i18n="footer.privacy">Privacy</a>
+          <a href="supporto/" data-i18n="footer.support">Supporto</a>
+          <a href="termini/" data-i18n="footer.terms">Termini</a>
+        </nav>
       </div>
-      <div class="card-grid">
-        <div class="flat-card reveal">
-          <span class="flat-icon">🍽️</span>
-          <h3>Pasti di oggi, in home</h3>
-          <p>Il piano del giorno è già in prima pagina, con la conferma di cosa hai davvero mangiato. Se il piano è vuoto, chiedi un suggerimento per il pranzo o la cena di oggi.</p>
-        </div>
-        <div class="flat-card reveal">
-          <span class="flat-icon">🔗</span>
-          <h3>Importa ricette da link</h3>
-          <p>Incolli l'URL di una ricetta: Madia la legge, normalizza gli ingredienti, ordina i passaggi e la collega al tuo catalogo. La raccolta cresce senza ricopiare nulla.</p>
-        </div>
-        <div class="flat-card reveal">
-          <span class="flat-icon">✅</span>
-          <h3>Disponibilità ingredienti</h3>
-          <p>Ogni ricetta si confronta con la dispensa: "hai tutto" oppure quanti ingredienti mancano — riconoscendo anche i simili già presenti. E aggiungi in lista solo i mancanti.</p>
-        </div>
-        <div class="flat-card reveal">
-          <span class="flat-icon">🤝</span>
-          <h3>Liste condivise</h3>
-          <p>Mandi una lista a un'altra persona e collaborate sulla stessa spesa, con l'avviso quando viene ricevuta e salvata.</p>
-        </div>
-        <div class="flat-card reveal">
-          <span class="flat-icon">🧊</span>
-          <h3>Congela, consuma, butta — anche in parte</h3>
-          <p>Gestisci i lotti pezzo per pezzo: consuma due yogurt su sei, congela il resto e allunga la scadenza. Il riacquisto viene proposto solo quando non resta più niente.</p>
-        </div>
-        <div class="flat-card reveal">
-          <span class="flat-icon">🎨</span>
-          <h3>Sei temi, chiaro e scuro</h3>
-          <p>Verde moderno, crema e terracotta, taupe, blu editoriale, prugna o bianco e nero — ognuno in modalità chiara e scura. E in Impostazioni trovi le novità di ogni versione.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+    </footer>
+    <script>
+const DEFAULT_LOCALE = "it";
+const SUPPORTED_LOCALES = ["it", "en"];
 
-  <!-- ================= AI ================= -->
-  <section class="ai-band" id="ai">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow">L'AI in cucina</span>
-        <h2>L'intelligenza che lavora per te, non al posto tuo.</h2>
-        <p class="lede">Madia usa l'AI nei quattro punti in cui toglie fatica vera — e ti lascia sempre l'ultima parola prima che qualcosa entri in dispensa, in lista o nel piano.</p>
-      </div>
-      <div class="ai-grid">
-        <div class="ai-item reveal">
-          <span class="n">1</span>
-          <div><h3>Genera il piano settimanale</h3><p>Capisce le tue indicazioni scritte a mano libera e compone i pasti rispettando dieta, allergie, gusti e soglie dei gruppi alimentari.</p></div>
-        </div>
-        <div class="ai-item reveal">
-          <span class="n">2</span>
-          <div><h3>Legge gli scontrini</h3><p>Dalla foto alle scorte: righe, quantità e prezzi riconosciuti e abbinati ai tuoi prodotti, con il negozio registrato nei report.</p></div>
-        </div>
-        <div class="ai-item reveal">
-          <span class="n">3</span>
-          <div><h3>Arricchisce ogni prodotto</h3><p>Scrivi solo il nome: categoria, reparto, emoji, durata media, stagionalità e dispensa consigliata arrivano da soli.</p></div>
-        </div>
-        <div class="ai-item reveal">
-          <span class="n">4</span>
-          <div><h3>Importa ricette dal web</h3><p>Da qualsiasi link: ingredienti normalizzati, passaggi ordinati, nutrizione e stagionalità compilate.</p></div>
-        </div>
-      </div>
-    </div>
-  </section>
+const translations = {
+  it: {
+    "meta.title": "Madia | La settimana in cucina, quasi in automatico",
+    "meta.description":
+      "Madia genera la pianificazione dei pasti, ne ricava la lista della spesa e aiuta a svuotare la dispensa.",
+    "a11y.skip": "Vai al contenuto",
+    "nav.aria": "Navigazione principale",
+    "nav.flow": "Come funziona",
+    "nav.balance": "Equilibrio",
+    "nav.everyday": "Ogni giorno",
+    "nav.ai": "L'AI in cucina",
+    "nav.home": "Torna all'inizio",
+    "language.control": "Scegli la lingua",
+    "language.selectIt": "Passa all'italiano",
+    "language.selectEn": "Passa all'inglese",
+    "cta.soon": "Presto su App Store",
+    "hero.eyebrow": "Pianificazione · Lista · Dispensa · Ricette",
+    "hero.titleLine1": "La settimana in cucina,",
+    "hero.titleEmphasis": "quasi in automatico.",
+    "hero.body":
+      "Madia genera la pianificazione dei pasti, ne ricava la lista della spesa e mette davanti le ricette che svuotano la dispensa. Meno decisioni ogni sera, più spazio per la parte bella: cucinare.",
+    "hero.secondary": "Guarda come funziona",
+    "trust.ads": "Niente pubblicità",
+    "trust.tracking": "Niente tracciamento",
+    "trust.delete": "Elimini account e dati quando vuoi",
+    "images.weeklyPlanAlt": "Piano settimanale dei pasti in Madia",
+    "images.shoppingModeAlt":
+      "Modalità spesa con prodotti da spuntare in Madia",
+    "images.planGeneratorAlt":
+      "Configurazione della pianificazione settimanale in Madia",
+    "images.planPreferencesAlt":
+      "Preferenze alimentari usate per generare il piano in Madia",
+    "images.shoppingFlowAlt":
+      "Lista della spesa attiva organizzata per reparto in Madia",
+    "images.receiptScanAlt":
+      "Acquisizione dello scontrino per caricare la spesa in Madia",
+    "images.guidedCookingAlt":
+      "Ricetta guidata con timer e lettura ad alta voce in Madia",
+    "engine.eyebrow": "Come funziona Madia",
+    "engine.title": "Tre tocchi, e la settimana è risolta.",
+    "engine.body":
+      "Il piano nasce dai tuoi gusti, la lista nasce dal piano e le proposte partono da ciò che hai già in casa. L'automatismo propone, tu decidi.",
+    "flow.eyebrow": "Il motore",
+    "flow.title": "Piano, lista, svuotamento.",
+    "flow.body":
+      "Ogni passaggio prepara il successivo, resta modificabile e non ti chiede di reinserire le stesse informazioni.",
+    "flow.step1Label": "01 / Pianificazione",
+    "flow.step1Title": "Il piano si genera da sé.",
+    "flow.step1Body":
+      "Scegli quanti pranzi e quante cene ti servono. Madia costruisce la settimana intorno a quello che hai già, dando priorità agli ingredienti più vicini alla scadenza.",
+    "flow.step1Detail1":
+      "Rispetta dieta, allergie, cibi da evitare e profilo alimentare.",
+    "flow.step1Detail2":
+      "Capisce indicazioni libere come “max 30 minuti” o “niente latticini a cena”.",
+    "flow.step1Detail3":
+      "Blocchi i pasti che ti piacciono e rigeneri soltanto gli altri.",
+    "flow.step1Outcome":
+      "Risultato: una settimana modificabile, pasto per pasto.",
+    "flow.step2Label": "02 / Lista della spesa",
+    "flow.step2Title": "La lista nasce dalla pianificazione.",
+    "flow.step2Body":
+      "Partendo dalla pianificazione dei pasti, Madia controlla cosa hai già in dispensa e aggiunge alla lista solo gli ingredienti mancanti, ordinati per reparto. Ogni voce resta collegata alla ricetta per cui serve.",
+    "flow.step2Detail1":
+      "Se cambi un pasto, Madia mostra prima cosa aggiungere e togliere.",
+    "flow.step2Detail2":
+      "La lista attiva si aggiorna solo dopo la tua conferma.",
+    "flow.step2Outcome":
+      "Risultato: una lista pronta per il supermercato.",
+    "flow.step3Label": "03 / Svuotamento",
+    "flow.step3Title": "Cucini, e la dispensa si scarica.",
+    "flow.step3Body":
+      "Seguendo il piano, Madia sa già cosa era previsto e prepara gli ingredienti e le quantità da togliere, ricetta per ricetta. Confermi o correggi con un tocco.",
+    "flow.step3Detail1":
+      "Un promemoria serale evita che il passaggio venga dimenticato.",
+    "flow.step3Detail2":
+      "Le scorte restano affidabili senza rifare inventari.",
+    "flow.step3Outcome":
+      "Risultato: meno spreco, meno spesa, dispensa aggiornata.",
+    "deduction.meal": "Pasto cucinato",
+    "deduction.review": "Proposta da confermare",
+    "deduction.stock": "Dispensa aggiornata",
+    "decision.eyebrow": "Il tempo ritrovato",
+    "decision.title":
+      "Il risparmio vero è smettere di decidere tutto ogni sera.",
+    "decision.body":
+      "Cosa si mangia? Cosa manca? Ho già cucinato carne tre volte? Madia risponde una volta per tutta la settimana, bilanciando gusti, dieta e quello che hai in casa. Puoi seguirla o cambiare ciò che vuoi.",
+    "balance.eyebrow": "Equilibrio e personalizzazione",
+    "balance.title": "Automatica non vuol dire uguale per tutti.",
+    "balance.body":
+      "L'automatismo lavora dentro due paletti: come dovresti mangiare e come ti piace mangiare. Il primo lo tiene Madia, il secondo lo imposti una volta e vale per sempre.",
+    "balance.item1Title": "Profilo settimanale",
+    "balance.item1Body":
+      "Equilibrata, Vegetariana o Proteica. Il profilo equilibrato richiede almeno 3 legumi e 2 pesci e non supera 4 uova, 3 carni, 1 salume e 3 formaggi.",
+    "balance.item2Title": "Controllo prima della lista",
+    "balance.item2Body":
+      "I conteggi dei gruppi alimentari mostrano come è bilanciata la settimana.",
+    "balance.item3Title": "Dieta e gusti distinti",
+    "balance.item3Body":
+      "La dieta è un filtro rigido; cibi e cucine preferite ordinano le proposte.",
+    "balance.item4Title": "Sbilancia quando serve",
+    "balance.item4Body":
+      "Dai più peso a proteine, carboidrati o grassi per una settimana diversa dal solito.",
+    "balance.caption":
+      "Macro, priorità alle scadenze e dieta nello stesso foglio.",
+    "loop.eyebrow": "Dopo i tre tocchi",
+    "loop.title": "E il resto si tiene aggiornato da solo.",
+    "loop.body":
+      "La spesa confermata diventa dispensa, la dispensa orienta le proposte, il pasto cucinato aggiorna le scorte. Non reinserisci nulla: al massimo confermi.",
+    "loop.step1Role": "Cosa comprare",
+    "loop.step1Title": "Lista della spesa",
+    "loop.step1Body":
+      "Gli acquisti confermati entrano in dispensa con la scadenza stimata. Le liste si archiviano, duplicano e condividono.",
+    "loop.step2Role": "Cosa hai in casa",
+    "loop.step2Title": "Dispensa",
+    "loop.step2Body":
+      "Quantità, lotti e scadenze in frigo, freezer e credenza guidano piano, lista e proposte di consumo.",
+    "loop.step3Role": "Cosa cucinare",
+    "loop.step3Title": "Ricette e pasti",
+    "loop.step3Body":
+      "Confermi cosa hai mangiato, la dispensa si scarica e ciò che è finito può tornare in lista.",
+    "learning.eyebrow": "E migliora con l'uso",
+    "learning.item1Title": "Scopre le tue ricorrenze",
+    "learning.item1Body":
+      "Dai riacquisti capisce quando finiscono caffè, detersivo o carta igienica e li ripropone al momento giusto.",
+    "learning.item2Title": "Affina le scadenze",
+    "learning.item2Body":
+      "Ogni data corretta migliora la durata proposta la volta successiva.",
+    "learning.item3Title": "Impara quanto spendi",
+    "learning.item3Body":
+      "I prezzi letti dagli scontrini rendono più utili la stima della lista e i report mensili.",
+    "loop.closing":
+      "Ti restano due gesti: confermare la spesa e i pasti cucinati. Tutto il resto lo tiene aggiornato Madia.",
+    "everyday.eyebrow": "Ogni giorno",
+    "everyday.title":
+      "Anche i passaggi in mezzo sono già semplificati.",
+    "everyday.body":
+      "Tra il piano e il piatto ci sono la spesa, le ricorrenze, la ricetta da seguire e ciò che sta per scadere. Madia accompagna ogni momento.",
+    "store.eyebrow": "In negozio",
+    "store.title": "Ti accompagna corsia per corsia.",
+    "store.body":
+      "La lista generata dal piano arriva già divisa per i reparti del punto vendita. Scegli catena e negozio, e i più usati di recente vengono prima.",
+    "store.item1Title": "Modalità spesa",
+    "store.item1Body": "Un reparto alla volta, con articoli presi e rimanenti.",
+    "store.item2Title": "Indicatore dei freschi",
+    "store.item2Body":
+      "Segnala quando il carrello contiene molti prodotti a breve scadenza.",
+    "store.item3Title": "Checkout in un tocco",
+    "store.item3Body":
+      "La lista spuntata diventa scorte con scadenze proposte.",
+    "store.item4Title": "Lista condivisa",
+    "store.item4Body": "Resta allineata con chi fa la spesa con te.",
+    "cooking.eyebrow": "Ai fornelli",
+    "cooking.title": "Segui la ricetta senza toccare niente.",
+    "cooking.body":
+      "La modalità cottura tiene lo schermo acceso, divide la preparazione in passaggi singoli e legge quello che devi fare. Il timer continua anche mentre guardi gli ingredienti.",
+    "cooking.item1Title": "Un passaggio alla volta",
+    "cooking.item1Body":
+      "Grande, leggibile e facile da scorrere avanti e indietro.",
+    "cooking.item2Title": "Timer integrato",
+    "cooking.item2Body": "Resta visibile sui passaggi a tempo.",
+    "cooking.item3Title": "Lettura ad alta voce",
+    "cooking.item3Body": "Legge il passaggio corrente mentre cucini.",
+    "cooking.item4Title": "Porzioni adattate",
+    "cooking.item4Body":
+      "Le quantità cambiano in base alle persone per cui cucini.",
+    "receipt.eyebrow": "La scorciatoia",
+    "receipt.title": "Non hai pianificato? Scansiona lo scontrino.",
+    "receipt.body":
+      "Fotografalo: Madia riconosce prodotti, quantità e prezzi, li abbina al catalogo e propone le scadenze. Tu controlli e confermi, così anche una spesa veloce tiene la dispensa affidabile.",
+    "receipt.item1Title": "Nessuna lista richiesta",
+    "receipt.item1Body":
+      "Vale anche per acquisti imprevisti o aggiunti al carrello.",
+    "receipt.item2Title": "Riconoscimento AI",
+    "receipt.item2Body": "Legge righe, quantità e prezzi anche se abbreviati.",
+    "receipt.item3Title": "Scadenze rapide",
+    "receipt.item3Body":
+      "Scorciatoie da 3, 7, 14 o 30 giorni per confermare.",
+    "receipt.item4Title": "Stime che migliorano",
+    "receipt.item4Body":
+      "Ogni correzione rende più precisa la proposta successiva.",
+    "receipt.item5Title": "Movimenti e report",
+    "receipt.item5Body":
+      "Prezzi, spesa e sprechi restano nello storico, compresa la stima in euro del cibo buttato.",
+    "extras.item1Title": "Acquisti ricorrenti proposti",
+    "extras.item1Body":
+      "Madia impara ogni quanto ricompri caffè, sapone o detersivo e li ripropone solo quando in casa non resta più niente. Puoi rinviare o saltare con un tocco.",
+    "extras.item2Title": "Avviso prima che scada",
+    "extras.item2Body":
+      "Dalla notifica arrivi al prodotto e scegli se consumarlo, congelarlo, buttarlo o rimetterlo in lista, anche solo in parte. Decidi tu quali avvisi ricevere.",
+    "extras.item3Title": "Prima ciò che scade, poi la stagione",
+    "extras.item3Body":
+      "Dispensa, ricette e lista danno priorità a ciò che va usato subito e distinguono i prodotti di stagione.",
+    "features.eyebrow": "Tutto il resto",
+    "features.title": "Le cose che scopri strada facendo.",
+    "features.item1Title": "Pasti di oggi, in home",
+    "features.item1Body":
+      "Il piano del giorno è già in prima pagina e puoi confermare cosa hai davvero mangiato. Se è vuoto, chiedi un suggerimento.",
+    "features.item2Title": "Importa ricette da link",
+    "features.item2Body":
+      "Incolli un URL: Madia normalizza ingredienti, ordina i passaggi e collega la ricetta al catalogo.",
+    "features.item3Title": "Disponibilità ingredienti",
+    "features.item3Body":
+      "Ogni ricetta si confronta con la dispensa, riconosce prodotti simili e aggiunge in lista soltanto ciò che manca.",
+    "features.item4Title": "Liste condivise",
+    "features.item4Body":
+      "Collabori sulla stessa spesa e ricevi conferma quando la lista viene ricevuta e salvata.",
+    "features.item5Title": "Gestione parziale dei lotti",
+    "features.item5Body":
+      "Consuma due yogurt, congela gli altri prolungandone la scadenza o segnala solo una parte come buttata. Il riacquisto parte quando non resta nulla.",
+    "features.item6Title": "Sei temi, chiaro e scuro",
+    "features.item6Body":
+      "Verde, crema e terracotta, taupe, blu, prugna o bianco e nero, ciascuno in chiaro e scuro. Le novità di versione sono nelle Impostazioni.",
+    "ai.eyebrow": "L'AI in cucina",
+    "ai.title": "L'intelligenza che lavora per te, non al posto tuo.",
+    "ai.body":
+      "Madia usa l'AI nei punti in cui toglie fatica vera e ti lascia sempre l'ultima parola prima che qualcosa entri nel piano, nella lista o in dispensa.",
+    "ai.item1Title": "Genera il piano settimanale",
+    "ai.item1Body":
+      "Interpreta indicazioni libere e rispetta dieta, allergie, gusti e soglie dei gruppi alimentari.",
+    "ai.item2Title": "Legge gli scontrini",
+    "ai.item2Body":
+      "Riconosce righe, quantità, prezzi e negozio, poi abbina ogni voce ai tuoi prodotti.",
+    "ai.item3Title": "Arricchisce ogni prodotto",
+    "ai.item3Body":
+      "Completa categoria, reparto, emoji, durata media, stagionalità e luogo di conservazione.",
+    "ai.item4Title": "Importa ricette dal web",
+    "ai.item4Body":
+      "Trasforma un link in ingredienti normalizzati, passaggi ordinati, nutrizione e stagionalità.",
+    "privacy.eyebrow": "I tuoi dati",
+    "privacy.title": "Casa tua, dati tuoi.",
+    "privacy.item1Title": "Niente pubblicità",
+    "privacy.item1Body":
+      "Nessun banner o promozione. Madia è al servizio della tua cucina, non degli inserzionisti.",
+    "privacy.item2Title": "Niente tracciamento",
+    "privacy.item2Body":
+      "Quello che compri e mangi non crea profili pubblicitari e non viene condiviso con terzi.",
+    "privacy.item3Title": "Elimini tutto quando vuoi",
+    "privacy.item3Body":
+      "Account e dati si cancellano direttamente dall'app, senza email al supporto o attese.",
+    "closing.eyebrow": "Madia · Spesa e Dispensa",
+    "closing.titleLine1": "Generi una volta.",
+    "closing.titleLine2": "La settimana si fa da sé.",
+    "closing.body":
+      "Piano, lista e proposte per svuotare la dispensa. Madia risponde alla domanda di ogni sera; a te resta la parte bella, cucinare.",
+    "launch.free": "Gratis al lancio",
+    "launch.italian": "In italiano",
+    "launch.local": "Pensata per la spesa in Italia",
+    "footer.line": "Pianifica, genera la lista, svuota la dispensa.",
+    "footer.legalAria": "Pagine informative",
+    "footer.privacy": "Privacy",
+    "footer.support": "Supporto",
+    "footer.terms": "Termini",
+  },
+  en: {
+    "meta.title": "Madia | Your week in the kitchen, almost automatic",
+    "meta.description":
+      "Madia generates your meal plan, turns it into a grocery list and helps you use what is already in your pantry.",
+    "a11y.skip": "Skip to content",
+    "nav.aria": "Primary navigation",
+    "nav.flow": "How it works",
+    "nav.balance": "Balance",
+    "nav.everyday": "Every day",
+    "nav.ai": "AI in the kitchen",
+    "nav.home": "Back to the top",
+    "language.control": "Choose language",
+    "language.selectIt": "Switch to Italian",
+    "language.selectEn": "Switch to English",
+    "cta.soon": "Coming soon to the App Store",
+    "hero.eyebrow": "Meal plan · List · Pantry · Recipes",
+    "hero.titleLine1": "Your week in the kitchen,",
+    "hero.titleEmphasis": "almost automatic.",
+    "hero.body":
+      "Madia generates your meal plan, turns it into a grocery list and brings forward recipes that use what is already in your pantry. Fewer decisions every evening, more room for the good part: cooking.",
+    "hero.secondary": "See how it works",
+    "trust.ads": "No advertising",
+    "trust.tracking": "No tracking",
+    "trust.delete": "Delete your account and data whenever you want",
+    "images.weeklyPlanAlt":
+      "Weekly meal plan in Madia, with the interface shown in Italian",
+    "images.shoppingModeAlt":
+      "Shopping mode with products to check off in Madia, with the interface shown in Italian",
+    "images.planGeneratorAlt":
+      "Weekly meal plan setup in Madia, with the interface shown in Italian",
+    "images.planPreferencesAlt":
+      "Food preferences used to generate the meal plan in Madia, with the interface shown in Italian",
+    "images.shoppingFlowAlt":
+      "Active grocery list organized by store section in Madia, with the interface shown in Italian",
+    "images.receiptScanAlt":
+      "Receipt capture used to add groceries to Madia, with the interface shown in Italian",
+    "images.guidedCookingAlt":
+      "Guided recipe with timer and read-aloud controls in Madia, with the interface shown in Italian",
+    "engine.eyebrow": "How Madia works",
+    "engine.title": "Three taps, and your week is sorted.",
+    "engine.body":
+      "The plan starts from your tastes, the list starts from the plan and suggestions start from what you already have at home. Automation proposes, you decide.",
+    "flow.eyebrow": "The engine",
+    "flow.title": "Plan, list, use it up.",
+    "flow.body":
+      "Each step prepares the next, stays editable and never asks you to enter the same information twice.",
+    "flow.step1Label": "01 / Meal planning",
+    "flow.step1Title": "The plan generates itself.",
+    "flow.step1Body":
+      "Choose how many lunches and dinners you need. Madia builds the week around what you already have, prioritizing ingredients that are closest to expiry.",
+    "flow.step1Detail1":
+      "It respects your diet, allergies, avoided foods and eating profile.",
+    "flow.step1Detail2":
+      "It understands free-form notes such as “30 minutes max” or “no dairy at dinner”.",
+    "flow.step1Detail3":
+      "Lock the meals you like and regenerate only the others.",
+    "flow.step1Outcome":
+      "Outcome: an editable week, one meal at a time.",
+    "flow.step2Label": "02 / Grocery list",
+    "flow.step2Title": "The list starts from your meal plan.",
+    "flow.step2Body":
+      "Starting from your meal plan, Madia checks what is already in your pantry and adds only the missing ingredients to the list, sorted by store section. Every item stays linked to the recipe it is needed for.",
+    "flow.step2Detail1":
+      "Change a meal and Madia previews what will be added or removed.",
+    "flow.step2Detail2":
+      "The active list changes only after you confirm the update.",
+    "flow.step2Outcome": "Outcome: a list ready for the supermarket.",
+    "flow.step3Label": "03 / Pantry deductions",
+    "flow.step3Title": "Cook, and your pantry updates.",
+    "flow.step3Body":
+      "Because it knows the plan, Madia prepares the ingredients and quantities to deduct, recipe by recipe. Confirm or correct the proposal with one tap.",
+    "flow.step3Detail1":
+      "An evening reminder keeps the update from being forgotten.",
+    "flow.step3Detail2":
+      "Stock stays reliable without repeating an inventory.",
+    "flow.step3Outcome":
+      "Outcome: less waste, lower spending, accurate pantry stock.",
+    "deduction.meal": "Meal cooked",
+    "deduction.review": "Proposal to review",
+    "deduction.stock": "Pantry updated",
+    "decision.eyebrow": "Time reclaimed",
+    "decision.title":
+      "The real saving is not deciding everything again each evening.",
+    "decision.body":
+      "What are we eating? What is missing? Have I already cooked meat three times? Madia answers once for the whole week, balancing your tastes, diet and what you already have. Follow the plan or change anything you want.",
+    "balance.eyebrow": "Balance and personalization",
+    "balance.title": "Automatic does not mean the same for everyone.",
+    "balance.body":
+      "Automation works between two guide rails: how you should eat and how you like to eat. Madia handles the first; you set the second once and keep it for every week.",
+    "balance.item1Title": "Weekly profile",
+    "balance.item1Body":
+      "Balanced, Vegetarian or Protein-focused. The balanced profile requires at least 3 legume and 2 fish meals and caps eggs at 4, meat at 3, cured meat at 1 and cheese at 3.",
+    "balance.item2Title": "Check before the list",
+    "balance.item2Body":
+      "Food-group counts show how the week is balanced before you create the list.",
+    "balance.item3Title": "Diet and tastes stay distinct",
+    "balance.item3Body":
+      "Diet is a strict filter; preferred foods and cuisines rank the suggestions.",
+    "balance.item4Title": "Shift the balance when needed",
+    "balance.item4Body":
+      "Give more weight to protein, carbohydrates or fat for a different kind of week.",
+    "balance.caption":
+      "Macros, expiry priority and diet in the same planning sheet.",
+    "loop.eyebrow": "After those three taps",
+    "loop.title": "Everything else keeps itself up to date.",
+    "loop.body":
+      "Confirmed groceries become pantry stock, the pantry shapes suggestions and cooked meals update quantities. Nothing needs to be entered again: at most, you confirm.",
+    "loop.step1Role": "What to buy",
+    "loop.step1Title": "Grocery list",
+    "loop.step1Body":
+      "Confirmed purchases enter the pantry with estimated expiry dates. Lists can be archived, duplicated and shared.",
+    "loop.step2Role": "What you have",
+    "loop.step2Title": "Pantry",
+    "loop.step2Body":
+      "Quantities, batches and expiry dates across fridge, freezer and cupboard guide plans, lists and consumption suggestions.",
+    "loop.step3Role": "What to cook",
+    "loop.step3Title": "Recipes and meals",
+    "loop.step3Body":
+      "Confirm what you ate, update the pantry and send depleted products back to the list when needed.",
+    "learning.eyebrow": "It improves with use",
+    "learning.item1Title": "Finds your recurring purchases",
+    "learning.item1Body":
+      "From repeat purchases, Madia learns when coffee, detergent or toilet paper runs out and suggests it at the right time.",
+    "learning.item2Title": "Refines expiry estimates",
+    "learning.item2Body":
+      "Every corrected date improves the duration suggested the next time.",
+    "learning.item3Title": "Learns what you spend",
+    "learning.item3Body":
+      "Prices read from receipts improve grocery-list estimates and monthly reports.",
+    "loop.closing":
+      "Only two gestures remain: confirm the groceries you bought and the meals you cooked. Madia keeps everything else up to date.",
+    "everyday.eyebrow": "Every day",
+    "everyday.title": "The steps in between are simpler too.",
+    "everyday.body":
+      "Between the plan and the plate are shopping, recurring purchases, recipes to follow and food close to expiry. Madia supports each moment.",
+    "store.eyebrow": "In store",
+    "store.title": "Follow the shop, aisle by aisle.",
+    "store.body":
+      "The list generated from your plan arrives already sorted by the chosen store's sections. Pick the chain and location; recently used stores appear first.",
+    "store.item1Title": "Shopping mode",
+    "store.item1Body":
+      "One section at a time, with picked-up and remaining item counts.",
+    "store.item2Title": "Fresh-food indicator",
+    "store.item2Body":
+      "Flags when the basket contains many short-life products.",
+    "store.item3Title": "One-tap checkout",
+    "store.item3Body":
+      "Checked-off items become pantry stock with proposed expiry dates.",
+    "store.item4Title": "Shared list",
+    "store.item4Body": "Stays in sync with whoever shops with you.",
+    "cooking.eyebrow": "At the stove",
+    "cooking.title": "Follow the recipe without touching anything.",
+    "cooking.body":
+      "Cooking mode keeps the screen awake, splits preparation into single steps and reads instructions aloud. The timer keeps running while you check the ingredients.",
+    "cooking.item1Title": "One step at a time",
+    "cooking.item1Body":
+      "Large, readable and easy to move backward or forward.",
+    "cooking.item2Title": "Built-in timer",
+    "cooking.item2Body": "Stays visible throughout timed steps.",
+    "cooking.item3Title": "Read aloud",
+    "cooking.item3Body": "Reads the current step while you cook.",
+    "cooking.item4Title": "Adjusted servings",
+    "cooking.item4Body":
+      "Ingredient quantities change for the number of people you are cooking for.",
+    "receipt.eyebrow": "The shortcut",
+    "receipt.title": "Did not plan the shop? Scan the receipt.",
+    "receipt.body":
+      "Take a photo: Madia recognizes products, quantities and prices, matches them to the catalog and proposes expiry dates. You review and confirm, so even a quick unplanned shop keeps pantry stock reliable.",
+    "receipt.item1Title": "No list required",
+    "receipt.item1Body":
+      "It also works for unplanned purchases or extras added to the basket.",
+    "receipt.item2Title": "AI recognition",
+    "receipt.item2Body":
+      "Reads rows, quantities and prices even when names are abbreviated.",
+    "receipt.item3Title": "Quick expiry dates",
+    "receipt.item3Body":
+      "Use 3, 7, 14 or 30-day shortcuts to confirm each date.",
+    "receipt.item4Title": "Estimates that improve",
+    "receipt.item4Body":
+      "Every correction makes the next proposal more accurate.",
+    "receipt.item5Title": "Movements and reports",
+    "receipt.item5Body":
+      "Prices, spending and waste stay in your history, including the estimated cost of discarded food.",
+    "extras.item1Title": "Suggested recurring purchases",
+    "extras.item1Body":
+      "Madia learns how often you buy coffee, soap or detergent and suggests them only when nothing is left at home. Postpone or skip with one tap.",
+    "extras.item2Title": "A warning before expiry",
+    "extras.item2Body":
+      "Open the product from its notification, then consume, freeze, discard or add it back to the list, even partially. You choose which alerts to receive.",
+    "extras.item3Title": "Expiry first, then seasonality",
+    "extras.item3Body":
+      "Pantry, recipes and lists prioritize what should be used soon and distinguish seasonal products.",
+    "features.eyebrow": "Everything else",
+    "features.title": "Useful details you discover along the way.",
+    "features.item1Title": "Today's meals on home",
+    "features.item1Body":
+      "The day's plan is already on the home screen and you can confirm what you actually ate. If it is empty, ask for a suggestion.",
+    "features.item2Title": "Import recipes from a link",
+    "features.item2Body":
+      "Paste a URL: Madia normalizes ingredients, orders the steps and connects the recipe to your catalog.",
+    "features.item3Title": "Ingredient availability",
+    "features.item3Body":
+      "Every recipe checks pantry stock, recognizes similar products and adds only missing ingredients to the list.",
+    "features.item4Title": "Shared lists",
+    "features.item4Body":
+      "Collaborate on the same shop and receive confirmation when the list is received and saved.",
+    "features.item5Title": "Partial batch management",
+    "features.item5Body":
+      "Use two yogurts, freeze the others and extend their expiry, or mark only part as discarded. Repurchase starts when nothing remains.",
+    "features.item6Title": "Six themes, light and dark",
+    "features.item6Body":
+      "Green, cream and terracotta, taupe, blue, plum or black and white, each in light and dark. Release notes are available in Settings.",
+    "ai.eyebrow": "AI in the kitchen",
+    "ai.title": "Intelligence that works for you, not instead of you.",
+    "ai.body":
+      "Madia uses AI where it removes real effort and always gives you the last word before anything enters the plan, list or pantry.",
+    "ai.item1Title": "Generates the weekly plan",
+    "ai.item1Body":
+      "Interprets free-form instructions and respects diet, allergies, tastes and food-group thresholds.",
+    "ai.item2Title": "Reads receipts",
+    "ai.item2Body":
+      "Recognizes rows, quantities, prices and store information, then matches each row to your products.",
+    "ai.item3Title": "Enriches every product",
+    "ai.item3Body":
+      "Completes category, department, emoji, average duration, seasonality and recommended storage location.",
+    "ai.item4Title": "Imports recipes from the web",
+    "ai.item4Body":
+      "Turns a link into normalized ingredients, ordered steps, nutrition and seasonality.",
+    "privacy.eyebrow": "Your data",
+    "privacy.title": "Your home, your data.",
+    "privacy.item1Title": "No advertising",
+    "privacy.item1Body":
+      "No banners or promotions. Madia serves your kitchen, not advertisers.",
+    "privacy.item2Title": "No tracking",
+    "privacy.item2Body":
+      "What you buy and eat does not create advertising profiles and is not shared with third parties.",
+    "privacy.item3Title": "Delete everything whenever you want",
+    "privacy.item3Body":
+      "Delete your account and data directly in the app, with no support email or waiting.",
+    "closing.eyebrow": "Madia · Groceries and Pantry",
+    "closing.titleLine1": "Generate it once.",
+    "closing.titleLine2": "The week takes care of itself.",
+    "closing.body":
+      "A plan, a list and suggestions for using pantry stock. Madia answers the question you face every evening; you keep the good part, cooking.",
+    "launch.free": "Free at launch",
+    "launch.italian": "Available in Italian",
+    "launch.local": "Designed for grocery shopping in Italy",
+    "footer.line": "Plan, generate the list, use what is in your pantry.",
+    "footer.legalAria": "Information pages",
+    "footer.privacy": "Privacy",
+    "footer.support": "Support",
+    "footer.terms": "Terms",
+  },
+};
 
-  <!-- ================= PRIVACY ================= -->
-  <section class="tight">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow">I tuoi dati</span>
-        <h2>Casa tua, dati tuoi.</h2>
-      </div>
-      <div class="privacy">
-        <div class="privacy-card reveal">
-          <div class="big">🚫</div>
-          <h3>Niente pubblicità</h3>
-          <p>Nessun banner, nessuna promozione. Madia è al servizio della tua cucina, non degli inserzionisti.</p>
-        </div>
-        <div class="privacy-card reveal">
-          <div class="big">🕵️</div>
-          <h3>Niente tracciamento</h3>
-          <p>Quello che compri e mangi resta un fatto tuo. Nessun profilo pubblicitario, nessuna condivisione con terzi.</p>
-        </div>
-        <div class="privacy-card reveal">
-          <div class="big">🗑️</div>
-          <h3>Elimini tutto quando vuoi</h3>
-          <p>Account e dati si cancellano direttamente dall'app, in modo definitivo. Senza email al supporto, senza attese.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+function isSupportedLocale(value) {
+  return SUPPORTED_LOCALES.includes(value);
+}
 
-  <!-- ================= CTA FINALE ================= -->
-  <section class="final" id="scarica">
-    <div class="wrap reveal">
-      <span class="eyebrow">Madia — Spesa e Dispensa</span>
-      <h2>Generi una volta. La settimana <span class="accent-word">si fa da sé</span>.</h2>
-      <p class="lede" style="max-width: 48ch;">Piano, lista e proposte per svuotare la dispensa: Madia risponde per te alla domanda di ogni sera. A te resta la parte bella — cucinare.</p>
-      <div class="cta-row">
-        <a class="btn btn-primary" href="#top">Presto su App Store</a>
-      </div>
-      <p class="trust-line" style="justify-content: center;">Gratis al lancio <span class="dot"></span> in italiano <span class="dot"></span> pensata per la spesa in Italia</p>
-    </div>
-  </section>
+function translate(locale, key) {
+  const value = translations[locale]?.[key];
 
-</main>
+  if (value !== undefined) {
+    return value;
+  }
 
-<footer class="site">
-  <div class="wrap foot">
-    <span class="brand" style="cursor: default;">
-      <span class="brand-mark" aria-hidden="true">
-        <svg width="22" height="22" viewBox="0 0 100 100">
-          <rect x="22" y="30" width="56" height="36" rx="7" fill="#FFF8F2"></rect>
-          <rect x="28" y="66" width="5" height="8" rx="1.5" fill="#FFF8F2"></rect>
-          <rect x="67" y="66" width="5" height="8" rx="1.5" fill="#FFF8F2"></rect>
-          <line x1="50" y1="34" x2="50" y2="62" stroke="var(--accent)" stroke-width="3"></line>
-        </svg>
-      </span>
-      Madia
-    </span>
-    <span>Pianifica, genera la lista, svuota la dispensa.</span>
-    <span class="foot-links">
-      <a href="privacy/">Privacy</a>
-      <a href="supporto/">Supporto</a>
-      <a href="termini/">Termini</a>
-    </span>
-  </div>
-</footer>
+  if (false) {
+    console.warn(`Missing translation: ${locale}.${key}`);
+  }
 
-<script>
-  (function () {
-    var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    var els = document.querySelectorAll(".reveal");
-    if (reduced || !("IntersectionObserver" in window)) {
-      els.forEach(function (el) { el.classList.add("in"); });
-      return;
-    }
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
-      });
-    }, { threshold: 0.12 });
-    els.forEach(function (el) { io.observe(el); });
-  })();
-</script>
+  return translations[DEFAULT_LOCALE][key] ?? key;
+}
 
-<script>
-  (function () {
-    var root = document.documentElement;
-    var btn = document.querySelector(".theme-toggle");
-    if (!btn) return;
-    function apply(dark) {
-      if (dark) root.setAttribute("data-ui", "dark");
-      else root.removeAttribute("data-ui");
-      btn.setAttribute("aria-pressed", dark ? "true" : "false");
-      btn.setAttribute("aria-label", dark ? "Torna al tema chiaro" : "Attiva il tema scuro");
-    }
-    apply(root.getAttribute("data-ui") === "dark");
-    btn.addEventListener("click", function () {
-      var dark = root.getAttribute("data-ui") !== "dark";
-      apply(dark);
-      try { localStorage.setItem("madia-theme", dark ? "dark" : "light"); } catch (e) {}
+function applyLocale(locale, root = document) {
+  const resolvedLocale = isSupportedLocale(locale) ? locale : DEFAULT_LOCALE;
+
+  root.documentElement.lang = resolvedLocale;
+  root.documentElement.dataset.locale = resolvedLocale;
+  root.title = translate(resolvedLocale, "meta.title");
+
+  const description = root.querySelector('meta[name="description"]');
+  description?.setAttribute(
+    "content",
+    translate(resolvedLocale, "meta.description"),
+  );
+
+  root.querySelectorAll("[data-i18n]").forEach((element) => {
+    element.textContent = translate(resolvedLocale, element.dataset.i18n);
+  });
+
+  root.querySelectorAll("[data-i18n-aria-label]").forEach((element) => {
+    element.setAttribute(
+      "aria-label",
+      translate(resolvedLocale, element.dataset.i18nAriaLabel),
+    );
+  });
+
+  root.querySelectorAll("[data-i18n-alt]").forEach((element) => {
+    element.setAttribute(
+      "alt",
+      translate(resolvedLocale, element.dataset.i18nAlt),
+    );
+  });
+
+  root.querySelectorAll("[data-locale]").forEach((button) => {
+    button.setAttribute(
+      "aria-pressed",
+      String(button.dataset.locale === resolvedLocale),
+    );
+  });
+
+  return resolvedLocale;
+}
+
+
+document.documentElement.classList.add("js");
+
+const LOCALE_STORAGE_KEY = "madia-landing-locale";
+
+document.documentElement.classList.add("js");
+
+createIcons({
+  icons: {
+    Archive,
+    ArrowDown,
+    CalendarDays,
+    ShoppingCart,
+  },
+  attrs: {
+    "aria-hidden": "true",
+    "stroke-width": 1.8,
+  },
+});
+
+function readSavedLocale() {
+  try {
+    const savedLocale = window.localStorage.getItem(LOCALE_STORAGE_KEY);
+    return isSupportedLocale(savedLocale) ? savedLocale : DEFAULT_LOCALE;
+  } catch {
+    return DEFAULT_LOCALE;
+  }
+}
+
+function saveLocale(locale) {
+  try {
+    window.localStorage.setItem(LOCALE_STORAGE_KEY, locale);
+  } catch {
+    // The page remains fully usable when storage is unavailable.
+  }
+}
+
+function setLocale(locale, { persist = false } = {}) {
+  const resolvedLocale = applyLocale(locale);
+
+  if (persist) {
+    saveLocale(resolvedLocale);
+  }
+}
+
+document.querySelectorAll("[data-locale]").forEach((button) => {
+  button.addEventListener("click", () => {
+    setLocale(button.dataset.locale, { persist: true });
+  });
+});
+
+setLocale(readSavedLocale());
+
+const reducedMotion = window.matchMedia(
+  "(prefers-reduced-motion: reduce)",
+).matches;
+
+if (!reducedMotion && "IntersectionObserver" in window) {
+  document.documentElement.classList.add("reveal-ready");
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      }
+    },
+    { rootMargin: "0px 0px -8%", threshold: 0.12 },
+  );
+
+  document.querySelectorAll(".reveal").forEach((element) => {
+    observer.observe(element);
+  });
+}
+
+const supportsFinePointer = window.matchMedia(
+  "(hover: hover) and (pointer: fine)",
+).matches;
+const hero = document.querySelector(".hero");
+const devices = document.querySelector(".hero__devices");
+
+if (!reducedMotion && supportsFinePointer && hero && devices) {
+  let frameId = 0;
+
+  hero.addEventListener("pointermove", (event) => {
+    const bounds = hero.getBoundingClientRect();
+    const x = (event.clientX - bounds.left) / bounds.width - 0.5;
+    const y = (event.clientY - bounds.top) / bounds.height - 0.5;
+
+    window.cancelAnimationFrame(frameId);
+    frameId = window.requestAnimationFrame(() => {
+      devices.classList.add("is-moving");
+      devices.style.setProperty("--shift-x", `${x * 8}px`);
+      devices.style.setProperty("--shift-y", `${y * 6}px`);
     });
-  })();
-</script>
+  });
 
-</body>
+  hero.addEventListener("pointerleave", () => {
+    devices.classList.remove("is-moving");
+    devices.style.setProperty("--shift-x", "0px");
+    devices.style.setProperty("--shift-y", "0px");
+  });
+}
+
+    </script>
+  </body>
 </html>
