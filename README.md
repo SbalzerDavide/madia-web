@@ -5,6 +5,7 @@ landing, sei screenshot dell'app, le icone e le pagine informative.
 
 ```
 index.html                 landing editoriale bilingue, pubblicata su /
+funzionalita/index.html    pagina bilingue delle funzionalità, pubblicata su /funzionalita/
 classica/index.html        landing classica, accessibile direttamente su /classica/
 editoriale/index.html      redirect compatibile dalla vecchia route /editoriale/
 favicon.svg                marchio Madia
